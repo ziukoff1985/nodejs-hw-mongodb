@@ -1,31 +1,71 @@
-// Імпортуємо необхідні модулі
 import express from 'express'; // фреймворк для створення сервера
 import pino from 'pino-http'; // middleware для логування запитів
 import cors from 'cors'; // middleware для дозволу CORS-запитів
+import dotenv from 'dotenv'; // модуль для роботи з .env-файлами
+import { getEnvVar } from './utils/getEnvVar.js'; // функція для отримання значення змінної середовища
 
-// Створюємо об'єкт сервера
-export const setupServer = express();
+dotenv.config(); // конфігурація .env-файлу
 
-// визначаємо порт для запуску сервера
-const PORT = 3000;
+// Отримання значення змінної середовища PORT
+// Якщо змінна PORT не вказана, то використовується значення 3000
+// Якщо змінна PORT не вказана та значення 3000 не вказано, то викидається помилка
+const PORT = Number(getEnvVar('PORT', 3000));
 
-// Middleware Pino для інформативного логування запитів
-// виводить у консоль інфу про запит, включаючи час, метод, URL, заголовки, параметри, body
-setupServer.use(
-  pino({
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'yyyy-mm-dd HH:MM:ss', // Налаштування формату часу
+// Функція для налаштування сервера
+export const setupServer = () => {
+  // Створення екземпляру сервера express
+  const app = express();
+
+  // Middleware для парсингу JSON-об'єктів в тілі запиту
+  app.use(express.json());
+
+  // Middleware для дозволу CORS-запитів
+  app.use(cors());
+
+  // Middleware "pino" для логування запитів
+  app.use(
+    pino({
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          translateTime: 'yyyy-mm-dd HH:MM:ss', // Налаштування формату часу
+        },
       },
-    },
-  }),
-);
+    }),
+  );
 
-// Middleware для дозволу CORS-запитів
-// дозволяє робити запити з інших доменів
-setupServer.use(cors());
+  // Маршрут для обробки GET-запитів на '/'
+  app.get('/', (req, res) => {
+    res.json({ message: 'Hello Node.js' });
+  });
+
+  // Маршрут для обробки POST-запитів на '/'
+  app.post('/', (req, res) => {
+    res.json({ message: 'POST accepted!' });
+  });
+
+  // Middleware для обробки помилок 404 - якщо маршрут не знайдено,
+  // то відправляємо відповідь з кодом 404 та повідомленням "Page Not found"
+  app.use('*', (req, res, next) => {
+    res.status(404).json({ message: 'Page Not found' });
+  });
+
+  // Middleware для обробки помилок сервера
+  app.use((err, req, res, next) => {
+    // Встановлення статусу відповіді на 500 та відправка JSON з повідомленням про помилку
+    res.status(500).json({
+      message: 'Something went wrong', // Повідомлення про помилку
+      error: err.message, // Деталі помилки
+    });
+  });
+
+  // Запуск сервера на вказаному порту
+  app.listen(PORT, () => {
+    // Виводимо повідомлення про запуск сервера
+    console.log(`Server is running on port ${PORT}`);
+  });
+};
 
 // Middleware для логування часу запиту
 // setupServer.use((req, res, next) => {
@@ -33,40 +73,3 @@ setupServer.use(cors());
 //   console.log('\x1b[32mТест зеленим кольором\x1b[0m');
 //   next();
 // });
-
-// Вбудований у express middleware для обробки (парсингу) JSON-даних у запитах
-// наприклад, у запитах POST або PATCH
-setupServer.use(express.json());
-
-// Маршрут для обробки GET-запитів на '/'
-setupServer.get('/', (req, res) => {
-  res.json({ message: 'Hello Цыган!' });
-});
-
-// Маршрут для обробки POST-запитів на '/'
-// setupServer.post('/', (req, res) => {
-//   res.json({ message: 'POST accepted!' });
-// });
-
-// Middleware для обробки невідомих запитів (404)
-// при запиті на невідомий маршрут:
-// повертає JSON-відповідь -> "Page Not found" з кодом 404
-setupServer.use('*', (req, res, next) => {
-  res.status(404).json({ message: 'Page Not found' });
-});
-
-// Middleware для обробки помилок -> "error-handling middleware" (приймає 4 аргументи)
-// при помилці:
-// повертає JSON-відповідь -> "Something went wrong" з кодом 500
-// та текстом помилки
-setupServer.use((err, req, res, next) => {
-  res.status(500).json({
-    message: 'Something went wrong',
-    error: err.message,
-  });
-});
-
-// Запуск сервера (прослуховування порту) на порту 3000
-setupServer.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});

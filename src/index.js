@@ -1,5 +1,5 @@
-// src/index.js
+// Імпортуємо функцію setupServer з файлу server.js
+import { setupServer } from './server.js';
 
-const message = 'Hello Цыган!';
-
-console.log(message);
+// Викликаємо функцію setupServer
+setupServer();

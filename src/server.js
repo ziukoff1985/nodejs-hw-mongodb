@@ -1,10 +1,7 @@
 import express from 'express'; // фреймворк для створення сервера
 import pino from 'pino-http'; // middleware для логування запитів
 import cors from 'cors'; // middleware для дозволу CORS-запитів
-import dotenv from 'dotenv'; // модуль для роботи з .env-файлами
 import { getEnvVar } from './utils/getEnvVar.js'; // функція для отримання значення змінної середовища
-
-dotenv.config(); // конфігурація .env-файлу
 
 // Отримання значення змінної середовища PORT
 // Якщо змінна PORT не вказана, то використовується значення 3000
@@ -37,7 +34,7 @@ export const setupServer = () => {
 
   // Маршрут для обробки GET-запитів на '/'
   app.get('/', (req, res) => {
-    res.json({ message: 'Hello Node.js' });
+    res.json({ message: 'Hello World' });
   });
 
   // Маршрут для обробки POST-запитів на '/'

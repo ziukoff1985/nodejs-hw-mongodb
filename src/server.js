@@ -9,7 +9,7 @@ import { getEnvVar } from './utils/getEnvVar.js'; // функція для от�
 const PORT = Number(getEnvVar('PORT', 3000));
 
 // Функція для налаштування сервера
-export const setupServer = () => {
+export const startServer = () => {
   // Створення екземпляру сервера express
   const app = express();
 

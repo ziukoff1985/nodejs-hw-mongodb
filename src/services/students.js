@@ -2,6 +2,7 @@
 import { StudentsCollection } from '../db/models/student.js';
 
 // Функція для отримання всіх студентів
+// Якщо студентів НЕ знайдено, то повертається пустий масив
 export const getAllStudents = async () => {
   const students = await StudentsCollection.find();
   return students; // Повертаємо документи всіх студентів

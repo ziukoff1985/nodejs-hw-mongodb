@@ -34,12 +34,12 @@ export const startServer = () => {
 
   // Маршрут для обробки GET-запитів на '/'
   app.get('/', (req, res) => {
-    res.json({ message: 'Hello World' });
+    res.json({ message: 'GET accepted! Node.js - is awesome' });
   });
 
   // Маршрут для обробки POST-запитів на '/'
   app.post('/', (req, res) => {
-    res.json({ message: 'POST accepted!' });
+    res.json({ message: 'POST accepted! MongoDB - you are awesome' });
   });
 
   // Middleware для обробки помилок 404 - якщо маршрут не знайдено,

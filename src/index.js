@@ -4,7 +4,7 @@ import { startServer } from './server.js';
 // Імпортуємо функцію initMongoDB з файлу initMongoDB.js
 import { initMongoDB } from './db/initMongoDB.js';
 
-// Функція bootstrap для ініціалізації сервера та підключення до бази даних
+// Функція bootstrap для ініціалізації підключення
 const bootstrap = async () => {
   await initMongoDB(); // Ініціалізуємо підключення до бази даних
   startServer(); // Запускаємо сервер

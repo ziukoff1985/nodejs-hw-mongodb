@@ -35,7 +35,7 @@ export const startServer = () => {
 
   // Маршрут для обробки GET-запитів на '/'
   app.get('/', (req, res) => {
-    res.json({ message: 'GET accepted! Node.js - is awesome' });
+    res.json({ message: 'GET request for root route successfully accepted!' });
   });
 
   // Маршрут для обробки GET-запитів на '/students'

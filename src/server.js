@@ -25,7 +25,19 @@ export const startServer = () => {
   );
 
   app.get('/', (req, res) => {
-    res.json({ message: 'GET accepted! Node.js - is awesome' });
+    res.send({
+      status: 200,
+      message: 'GET request for root route successfully accepted!',
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  app.post('/', (req, res) => {
+    res.send({
+      status: 200,
+      message: 'POST request for root route successfully accepted!',
+      timestamp: new Date().toISOString(),
+    });
   });
 
   app.get('/contacts', async (req, res) => {
@@ -34,7 +46,7 @@ export const startServer = () => {
     res.status(200).json({
       status: 200,
       message: `Successfully found contacts in the amount of ${contacts.length} pcs!`,
-      data: contacts, // Список студентів
+      data: contacts,
     });
   });
 
@@ -54,10 +66,6 @@ export const startServer = () => {
       message: `Successfully found contact with id: ${contactId}!`,
       data: contact,
     });
-  });
-
-  app.post('/', (req, res) => {
-    res.json({ message: 'POST accepted! MongoDB - you are awesome' });
   });
 
   app.use('*', (req, res, next) => {

@@ -12,7 +12,13 @@ const PORT = Number(getEnvVar('PORT', 3000));
 export const setupServer = () => {
   const app = express();
 
-  app.use(express.json());
+  app.use(
+    express.json({
+      // Вказуємо, що ми очікуємо JSON-дані або JSON:API
+      type: ['application/json', 'application/vnd.api+json'],
+      limit: '100kb', // обмеження на розмір тіла запиту
+    }),
+  );
   app.use(cors());
 
   app.use(

@@ -1,4 +1,9 @@
-import { getAllContacts, getContactById } from '../services/contacts.js';
+import {
+  createNewContact,
+  getAllContacts,
+  getContactById,
+} from '../services/contacts.js';
+
 import createHttpError from 'http-errors';
 
 export const getAllContactsController = async (req, res) => {
@@ -42,5 +47,40 @@ export const getContactByIdController = async (req, res, next) => {
     status: 200,
     message: `Successfully found contact with id: ${contactId}!`,
     data: contact,
+  });
+};
+
+export const createNewContactController = async (req, res) => {
+  if (!req.body.name || !req.body.phoneNumber || !req.body.contactType) {
+    const missingFields = [];
+
+    if (!req.body.name) {
+      missingFields.push('name');
+    }
+    if (!req.body.phoneNumber) {
+      missingFields.push('phoneNumber');
+    }
+    if (!req.body.contactType) {
+      missingFields.push('contactType');
+    }
+
+    throw createHttpError(
+      400,
+      `Missing required fields: ${missingFields.join(', ')}`,
+    );
+
+    // res.status(400).json({
+    //   status: 400,
+    //   message: `Missing required fields: ${missingFields.join(', ')}`,
+    // });
+    // return;
+  }
+
+  const newContact = await createNewContact(req.body);
+
+  res.status(201).json({
+    status: 201,
+    message: 'Successfully created a new contact!',
+    data: newContact,
   });
 };

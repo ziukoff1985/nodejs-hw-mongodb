@@ -1,5 +1,6 @@
 import {
   createNewContact,
+  deleteContact,
   getAllContacts,
   getContactById,
 } from '../services/contacts.js';
@@ -83,4 +84,25 @@ export const createNewContactController = async (req, res) => {
     message: 'Successfully created a new contact!',
     data: newContact,
   });
+};
+
+export const deleteContactController = async (req, res, next) => {
+  const { contactId } = req.params;
+  const deletedContact = await deleteContact(contactId);
+
+  if (!deletedContact) {
+    throw createHttpError(404, 'Contact not found');
+  }
+
+  // if (!deletedContact) {
+  //   next(createHttpError(404, 'Contact not found'));
+  //   return;
+  // }
+
+  res.status(204).send();
+
+  // res.status(200).json({
+  //   status: 200,
+  //   message: 'Successfully deleted contact!',
+  // });
 };

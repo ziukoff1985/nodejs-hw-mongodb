@@ -22,7 +22,7 @@ export const deleteContact = async (contactId) => {
   return deletedContact;
 };
 
-export const putContact = async (contactId, payload, options = {}) => {
+export const updateContact = async (contactId, payload, options = {}) => {
   const updatedContact = await ContactsCollection.findOneAndUpdate(
     { _id: contactId },
     payload,

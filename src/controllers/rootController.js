@@ -1,7 +1,7 @@
 export const getRootController = async (req, res) => {
   res.status(200).json({
     status: 200,
-    message: 'GET request for root route successfully accepted!',
+    message: 'GET request for root route successfully accepted (hw3-crud)!',
     timestamp: new Date().toISOString(),
   });
 };

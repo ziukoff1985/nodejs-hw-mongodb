@@ -12,9 +12,6 @@ import createHttpError from 'http-errors';
 export const getAllContactsController = async (req, res) => {
   const contacts = await getAllContacts();
 
-  // Код для тестування обробки помилок
-  // throw new Error('Test error: Failed to fetch contacts');
-
   res.status(200).json({
     status: 200,
     message: `Successfully found contacts in the amount of ${contacts.length} pcs!`,
@@ -29,22 +26,6 @@ export const getContactByIdController = async (req, res, next) => {
   if (!contact) {
     throw createHttpError(404, 'Contact not found');
   }
-
-  // Старий варіант перевірки на відсутність контакту
-  // Код змінили на throw createHttpError(404, 'Contact not found');
-  // if (!contact) {
-  // next(new Error('Contact not found'));
-  // return;
-  // }
-
-  // Старий варіант коду обробки помилок
-  // Код змінили на next(new Error('Contact not found'));
-  //   if (!contact) {
-  //     res.status(404).json({
-  //       message: 'Contact not found',
-  //     });
-  //     return;
-  //   }
 
   res.status(200).json({
     status: 200,
@@ -71,12 +52,6 @@ export const createNewContactController = async (req, res) => {
       400,
       `Missing required fields: ${missingFields.join(', ')}`,
     );
-
-    // res.status(400).json({
-    //   status: 400,
-    //   message: `Missing required fields: ${missingFields.join(', ')}`,
-    // });
-    // return;
   }
 
   const newContact = await createNewContact(req.body);
@@ -96,17 +71,13 @@ export const deleteContactController = async (req, res, next) => {
     throw createHttpError(404, 'Contact not found');
   }
 
+  // ✅ Альтернативний варіант обробки помилки
   // if (!deletedContact) {
   //   next(createHttpError(404, 'Contact not found'));
   //   return;
   // }
 
   res.status(204).send();
-
-  // res.status(200).json({
-  //   status: 200,
-  //   message: 'Successfully deleted contact!',
-  // });
 };
 
 export const patchContactController = async (req, res, next) => {

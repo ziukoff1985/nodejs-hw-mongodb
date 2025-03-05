@@ -16,11 +16,3 @@ export const errorHandler = (err, req, res, next) => {
     data: err.message,
   });
 };
-
-// Старий варіант Middleware для обробки помилок 500
-// export const errorHandler = (err, req, res, next) => {
-//     res.status(500).json({
-//       message: 'Something went wrong',
-//       error: err.message,
-//     });
-//   };

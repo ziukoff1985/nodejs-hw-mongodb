@@ -1,5 +1,4 @@
 import { Router } from 'express';
-// import { getAllContacts, getContactById } from '../services/contacts.js';
 import {
   createNewContactController,
   deleteContactController,

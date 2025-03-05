@@ -3,7 +3,8 @@ import {
   deleteContact,
   getAllContacts,
   getContactById,
-  updateContact,
+  patchUpdateContact,
+  putUpdateContact,
 } from '../services/contacts.js';
 
 import createHttpError from 'http-errors';
@@ -108,9 +109,41 @@ export const deleteContactController = async (req, res, next) => {
   // });
 };
 
+export const patchContactController = async (req, res, next) => {
+  const { contactId } = req.params;
+  const result = await patchUpdateContact(contactId, req.body);
+
+  if (!result) {
+    throw createHttpError(404, 'Contact not found');
+  }
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully patched a contact!',
+    data: result,
+  });
+};
+
 export const putContactController = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await updateContact(contactId, req.body, { upsert: true });
+
+  const existingContact = await getContactById(contactId);
+
+  if (!existingContact) {
+    if (!req.body.name || !req.body.phoneNumber || !req.body.contactType) {
+      const missingFields = [];
+
+      if (!req.body.name) missingFields.push('name');
+      if (!req.body.phoneNumber) missingFields.push('phoneNumber');
+      if (!req.body.contactType) missingFields.push('contactType');
+
+      throw createHttpError(
+        400,
+        `Missing required fields for upsert: ${missingFields.join(', ')}`,
+      );
+    }
+  }
+  const result = await putUpdateContact(contactId, req.body, { upsert: true });
 
   if (!result) {
     throw createHttpError(404, 'Contact not found');
@@ -120,21 +153,6 @@ export const putContactController = async (req, res, next) => {
   res.status(statusCode).json({
     status: statusCode,
     message: 'Successfully upserted a contact!',
-    data: result.contact,
-  });
-};
-
-export const patchContactController = async (req, res, next) => {
-  const { contactId } = req.params;
-  const result = await updateContact(contactId, req.body);
-
-  if (!result) {
-    throw createHttpError(404, 'Contact not found');
-  }
-
-  res.status(200).json({
-    status: 200,
-    message: 'Successfully updated a contact!',
     data: result.contact,
   });
 };

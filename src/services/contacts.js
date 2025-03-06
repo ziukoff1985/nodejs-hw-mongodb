@@ -63,7 +63,7 @@ export const putUpdateContact = async (contactId, payload, options = {}) => {
     // includeResultMetadata: true - повертає метадані документа
     // Ми використовуємо метадані для визначення, чи контакт був створениий або оновлений
   );
-  // Перевіряємо, чи є результат (updatedContact) і сам документ (updatedContact.value).
+  // Перевіряємо, чи є результат операції (updatedContact - це результат із метаданими) і оновлений/створений документ (updatedContact.value).
   if (!updatedContact || !updatedContact.value) {
     return null;
   }
@@ -73,6 +73,17 @@ export const putUpdateContact = async (contactId, payload, options = {}) => {
     // updatedContact?.lastErrorObject?.upserted - синтаксис означає "якщо updatedContact не є null, то використовуємо lastErrorObject, якщо lastErrorObject не є null, то використовуємо upserted"
   };
 };
+
+// ❗❗❗ ДУЖЕ ВАЖЛИВО!
+// ✅ метод findOneAndUpdate -> ПОВЕРТАЄ:
+// - Без 'includeResultMetadata: true' -> повертає сам документ (оновлений чи старий, залежно від { new: true/false }) або null, якщо документа немає.
+// - Із 'includeResultMetadata: true' (як в нашому випадку) -> повертає об'єкт із метаданими, який має структуру:
+// {
+//    value: <документ>, // Оновлений документ або null
+//    lastErrorObject: { upserted: <id>, n: <кількість> }, // Метадані операції
+//    ok: 1 // Статус операції
+// }
+// Тобто updatedContact — це не просто документ, а об'єкт із полями .value, .lastErrorObject, тощо.
 
 // ❗❗❗ Альтернативний варіант putUpdateContact, якщо потрібно замінити весь документ на новий
 // ✅ В цьому варіанті ми використовуємо метод findOneAndReplace, який замінює весь документ на новий (непередані поля в body -> будуть видалені з документа)

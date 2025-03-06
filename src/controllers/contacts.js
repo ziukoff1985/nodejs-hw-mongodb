@@ -15,6 +15,12 @@ import createHttpError from 'http-errors';
 export const getAllContactsController = async (req, res) => {
   const contacts = await getAllContacts(); // Використовуємо сервісну функцію getAllContacts
 
+  // Перевірка на відсутність контактів
+  // Якщо контактів немає (масив контактів порожній) - викликаємо помилку
+  if (contacts.length === 0) {
+    throw createHttpError(404, 'No contacts found');
+  }
+
   // Відправляємо відповідь з даними контактів
   res.status(200).json({
     status: 200,
@@ -124,7 +130,7 @@ export const deleteContactController = async (req, res, next) => {
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params; // Отримуємо id контакту з параметрів запиту
   // Використовуємо сервісну функцію patchUpdateContact, передаємо id контакту і тіло запиту
-  const result = await patchUpdateContact(contactId, req.body); 
+  const result = await patchUpdateContact(contactId, req.body);
 
   // Перевірка на відсутність контакту
   // Якщо контакт не знайдено (null), викликаємо помилку

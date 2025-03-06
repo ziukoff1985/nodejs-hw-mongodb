@@ -1,51 +1,76 @@
+// ❗❗❗ Імпортуємо модель ContactsCollection
+// Використовуємо її для запитів до колекції "contacts" у MongoDB
 import { ContactsCollection } from '../db/models/contacts.js';
 
+// Асинхронна функція для отримання всіх контактів
+// Використовуємо метод find() для отримання всіх документів в колекції
+// Повертає масив контактів
 export const getAllContacts = async () => {
   const contacts = await ContactsCollection.find();
   return contacts;
 };
 
+// Асинхронна функція для отримання контакту за id
+// Використовуємо метод findById() для отримання документа за id
+// Приймає id контакту -> повертає об'єкт контакту
 export const getContactById = async (contactId) => {
   const contact = await ContactsCollection.findById(contactId);
   return contact;
 };
 
+// Асинхронна функція для створення нового контакту
+// Використовуємо метод create() для створення нового документа в колекції
+// Приймає об'єкт контакту (з req.body) -> повертає об'єкт контакту
 export const createNewContact = async (payload) => {
   const newContact = await ContactsCollection.create(payload);
   return newContact;
 };
 
+// Асинхронна функція для видалення контакту за id
+// Використовуємо метод findOneAndDelete() для видалення документа за id
+// Приймає id контакту -> повертає об'єкт видаленого контакту
 export const deleteContact = async (contactId) => {
   const deletedContact = await ContactsCollection.findOneAndDelete({
-    _id: contactId,
+    _id: contactId, // _id: contactId - фільтр для пошуку документа за id
   });
   return deletedContact;
 };
 
+// Асинхронна функція для оновлення контакту PATCH
+// Використовуємо метод findOneAndUpdate() для часткового оновлення документа
+// Приймає id контакту, об'єкт контакту (з req.body) і об'єкт опцій -> повертає об'єкт оновленого контакту
 export const patchUpdateContact = async (contactId, payload, options = {}) => {
   const updatedContact = await ContactsCollection.findOneAndUpdate(
-    { _id: contactId },
+    { _id: contactId }, // _id: contactId - фільтр для пошуку документа за id
     { $set: payload }, // $set для часткового оновлення документа
-    { new: true, ...options },
+    { new: true, ...options }, // new: true - повертає оновлениий документ, ...options - опції
   );
+  // Якщо контакт не знайдено (null), повертаємо null
   if (!updatedContact) {
     return null;
   }
   return updatedContact;
 };
 
+// Асинхронна функція для оновлення контакту PUT
+// Використовуємо метод findOneAndUpdate() для повного оновлення документа
+// Приймає id контакту, об'єкт контакту (з req.body) і об'єкт опцій -> повертає об'єкт оновленого контакту
 export const putUpdateContact = async (contactId, payload, options = {}) => {
   const updatedContact = await ContactsCollection.findOneAndUpdate(
-    { _id: contactId },
-    payload,
-    { new: true, includeResultMetadata: true, ...options },
+    { _id: contactId }, // _id: contactId - фільтр для пошуку документа за id
+    payload, // Повне оновлення документа
+    { new: true, includeResultMetadata: true, ...options }, // new: true - повертає оновлениий документ, ...options - опції
+    // includeResultMetadata: true - повертає метадані документа
+    // Ми використовуємо метадані для визначення, чи контакт був створениий або оновлений
   );
+  // Перевіряємо, чи є результат (updatedContact) і сам документ (updatedContact.value).
   if (!updatedContact || !updatedContact.value) {
     return null;
   }
   return {
-    contact: updatedContact.value,
-    isNew: Boolean(updatedContact?.lastErrorObject?.upserted),
+    contact: updatedContact.value, // Повертаємо об'єкт контакту
+    isNew: Boolean(updatedContact?.lastErrorObject?.upserted), // Повертаємо, чи контакт був створений
+    // updatedContact?.lastErrorObject?.upserted - синтаксис означає "якщо updatedContact не є null, то використовуємо lastErrorObject, якщо lastErrorObject не є null, то використовуємо upserted"
   };
 };
 

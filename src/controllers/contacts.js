@@ -12,7 +12,7 @@ import {
 import createHttpError from 'http-errors';
 
 // Контролер для отримання всіх контактів
-export const getAllContactsController = async (req, res) => {
+export const getAllContactsController = async (_req, res) => {
   const contacts = await getAllContacts(); // Використовуємо сервісну функцію getAllContacts
 
   // Перевірка на відсутність контактів
@@ -30,7 +30,7 @@ export const getAllContactsController = async (req, res) => {
 };
 
 // Контролер для отримання контакту за id
-export const getContactByIdController = async (req, res, next) => {
+export const getContactByIdController = async (req, res, _next) => {
   const { contactId } = req.params; // Отримуємо id контакту з параметрів запиту
   const contact = await getContactById(contactId); // Використовуємо сервісну функцію getContactById, повертає об'єкт контакту
 
@@ -106,7 +106,7 @@ export const createNewContactController = async (req, res) => {
 };
 
 // Контролер для видалення контакту
-export const deleteContactController = async (req, res, next) => {
+export const deleteContactController = async (req, res, _next) => {
   const { contactId } = req.params; // Отримуємо id контакту з параметрів запиту
   const deletedContact = await deleteContact(contactId); // Використовуємо сервісну функцію deleteContact
   // Передаємо в неї id контакту
@@ -127,7 +127,7 @@ export const deleteContactController = async (req, res, next) => {
 };
 
 // Контролер для оновлення контакту PATCH
-export const patchContactController = async (req, res, next) => {
+export const patchContactController = async (req, res, _next) => {
   const { contactId } = req.params; // Отримуємо id контакту з параметрів запиту
   // Використовуємо сервісну функцію patchUpdateContact, передаємо id контакту і тіло запиту
   const result = await patchUpdateContact(contactId, req.body);
@@ -147,7 +147,7 @@ export const patchContactController = async (req, res, next) => {
 };
 
 // Контролер для оновлення контакту PUT
-export const putContactController = async (req, res, next) => {
+export const putContactController = async (req, res, _next) => {
   const { contactId } = req.params; // Отримуємо id контакту з параметрів запиту
 
   // Отримуємо об'єкт контакту за id

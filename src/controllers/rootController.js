@@ -1,3 +1,4 @@
+// ❗ Контролери для тестових запитів на root route
 export const getRootController = async (req, res) => {
   res.status(200).json({
     status: 200,

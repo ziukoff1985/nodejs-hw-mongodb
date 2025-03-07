@@ -4,14 +4,14 @@ import { HttpError } from 'http-errors';
 
 // Middleware для обробки помилок
 // ❗❗❗ Обов'язково має приймати 4 аргументи
-export const errorHandler = (err, req, res, next) => {
+export const errorHandler = (err, _req, res, _next) => {
   // Перевіряємо, чи err є екземпляром класу HttpError
   // Якщо так - відправляємо відповідь з даними помилки
   if (err instanceof HttpError) {
     res.status(err.status).json({
       status: err.status, // Статус відповіді (наприклад, 404, 400, 401 ...)
       message: err.name, // Назва помилки (наприклад, 'Not Found', 'Bad Request', 'Unauthorized' ...)
-      data: err, // Дані помилки (наприклад, об'єкт помилки)
+      data: err.message, // Повідомлення помилки (наприклад, 'Contact not found')
     });
     return;
   }

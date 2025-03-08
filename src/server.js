@@ -13,22 +13,17 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js'; // Middlewar
 // Визначаємо порт, на якому працюватиме сервер
 // Використовуємо функцію getEnvVar для отримання значення зі змінної середовища PORT
 // Якщо змінна не вказана (undefined), за замовчуванням використовуємо порт 3000
-const PORT = Number(getEnvVar('PORT', 3000));
+// Альтернатива для parseInt() --> Number()
+const PORT = parseInt(getEnvVar('PORT', 3000));
 
 // Експортуємо функцію setupServer, яка налаштовує та запускає сервер Express
 // Функція створює сервер, налаштовує middleware, визначає маршрути та запускає його
 export const setupServer = () => {
   const app = express(); // Ініціалізуємо сервер Express, створюючи об'єкт додатку для обробки запитів
 
-  // Налаштовуємо "глобальні" middleware для обробки вхідних даних
-  // // Парсить тіло запитів у форматі JSON (наприклад, із POST чи PUT) і додає результат як об'єкт до "req.body"
-  app.use(
-    express.json({
-      // Вказуємо, що ми очікуємо JSON-дані або JSON:API
-      type: ['application/json', 'application/vnd.api+json'],
-      limit: '100kb', // обмеження на розмір тіла запиту
-    }),
-  );
+  // ✅ Налаштовуємо "глобальні" middleware для обробки вхідних даних
+  // express.json --> ❗ перенесено в src/routers/contacts.js
+
   app.use(cors()); // Дозволяє крос-доменні запити (CORS) з будь-якого джерела (без обмежень за замовчуванням)
 
   // Налаштовуємо логування всіх запитів за допомогою Pino

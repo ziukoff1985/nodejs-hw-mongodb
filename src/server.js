@@ -7,18 +7,13 @@ import rootRouter from './routers/rootRouter.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
-const PORT = Number(getEnvVar('PORT', 3000));
+const PORT = parseInt(getEnvVar('PORT', 3000));
 
 export const setupServer = () => {
   const app = express();
 
-  app.use(
-    express.json({
-      // Вказуємо, що ми очікуємо JSON-дані або JSON:API
-      type: ['application/json', 'application/vnd.api+json'],
-      limit: '100kb', // обмеження на розмір тіла запиту
-    }),
-  );
+  // ❗ app.use(express.json()); --> перенесено в src/routers/contacts.js
+
   app.use(cors());
 
   app.use(

@@ -1,5 +1,5 @@
-import express from 'express';
-import { Router } from 'express';
+import express, { Router } from 'express';
+// import { Router } from 'express';
 import {
   createNewContactController,
   deleteContactController,
@@ -11,7 +11,10 @@ import {
 
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
-import { createContactSchema } from '../validation/contacts.js';
+import {
+  createContactSchema,
+  updateContactSchema,
+} from '../validation/contacts.js';
 
 const router = Router();
 
@@ -34,11 +37,13 @@ router.post(
 router.put(
   '/contacts/:contactId',
   jsonParser,
+  validateBody(createContactSchema),
   ctrlWrapper(putContactController),
 );
 router.patch(
   '/contacts/:contactId',
   jsonParser,
+  validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
 );
 

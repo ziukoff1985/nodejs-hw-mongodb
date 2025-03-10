@@ -56,6 +56,7 @@ export const updateContactSchema = Joi.object({
     }),
   isFavourite: Joi.boolean().optional(),
 })
+  // "or --> для перевірки наявності хоча б одного поля при PATCH запиті"
   .or('name', 'phoneNumber', 'email', 'contactType', 'isFavourite')
   .messages({
     'object.missing': 'At least one field must be provided for update',

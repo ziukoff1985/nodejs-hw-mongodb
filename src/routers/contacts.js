@@ -10,6 +10,8 @@ import {
 } from '../controllers/contacts.js';
 
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import { validateBody } from '../middlewares/validateBody.js';
+import { createContactSchema } from '../validation/contacts.js';
 
 const router = Router();
 
@@ -23,7 +25,12 @@ router.get('/contacts', ctrlWrapper(getAllContactsController));
 router.get('/contacts/:contactId', ctrlWrapper(getContactByIdController));
 router.delete('/contacts/:contactId', ctrlWrapper(deleteContactController));
 
-router.post('/contacts', jsonParser, ctrlWrapper(createNewContactController));
+router.post(
+  '/contacts',
+  jsonParser,
+  validateBody(createContactSchema),
+  ctrlWrapper(createNewContactController),
+);
 router.put(
   '/contacts/:contactId',
   jsonParser,

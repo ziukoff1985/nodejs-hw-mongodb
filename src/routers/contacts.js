@@ -26,6 +26,8 @@ const jsonParser = express.json({
 });
 
 router.get('/contacts', ctrlWrapper(getAllContactsController));
+
+// ✅ Важливо! ❗ Порядок middleware: isValidId → ctrlWrapper
 router.get(
   '/contacts/:contactId',
   isValidId,
@@ -37,6 +39,7 @@ router.delete(
   ctrlWrapper(deleteContactController),
 );
 
+// ✅ Важливо! ❗ Порядок middleware: jsonParser → validateBody → ctrlWrapper
 router.post(
   '/contacts',
   jsonParser,

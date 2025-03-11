@@ -20,7 +20,7 @@ const parseNumber = (number, defaultValue) => {
 
 // ❗❗❗ Функція-парсер параметрів пагінації з запиту клієнта (req.query)
 // ✅ Приймає --> req.query
-// ✅ Повертає об'єкт з page і perPage
+// ✅ Повертає --> об'єкт з page і perPage
 // ❗ parsedPage --> це валідний номер сторінки (мінімум 1)
 // ❗ parsedPerPage --> це валідна кількість елементів на сторінці (мінімум 1)
 // ✅ page і perPage будуть переданими числами (з req.query) або defaultValue

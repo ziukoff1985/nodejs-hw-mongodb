@@ -9,6 +9,7 @@ import createHttpError from 'http-errors';
 export const isValidId = (req, res, next) => {
   const { contactId } = req.params;
   if (!isValidObjectId(contactId)) {
+    // переробити на next???
     throw createHttpError(400, 'Invalid contact ID');
   }
   next();

@@ -1,6 +1,6 @@
 // ✅ Middleware для валідації тіла запиту за допомогою схеми Joi
 // ✅ validateAsync — асинхронний метод Joi для перевірки req.body
-// ✅ abortEarly: false — збирає всі помилки валідації, а не зупиняється на першій
+// ✅ { abortEarly: false } — збирає всі помилки валідації, а не зупиняється на першій
 
 import createHttpError from 'http-errors';
 

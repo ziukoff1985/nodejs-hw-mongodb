@@ -1,7 +1,12 @@
 import { ContactsCollection } from '../db/models/contacts.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
-export const getAllContacts = async ({ page, perPage }) => {
+export const getAllContacts = async ({
+  page = 1,
+  perPage = 10,
+  sortBy = 'name',
+  sortOrder = 1, // Альтернативний варіант --> sortOrder = SORT_ORDER.ASC
+}) => {
   const limit = perPage; // limit — обмежує кількість повернутих контактів
   const skip = (page - 1) * perPage; // skip — пропускає записи попередніх сторінок
 
@@ -10,7 +15,11 @@ export const getAllContacts = async ({ page, perPage }) => {
     .merge(contactsQuery)
     .countDocuments();
 
-  const contacts = await contactsQuery.skip(skip).limit(limit).exec();
+  const contacts = await contactsQuery
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder }) // Сортує за полем sortBy у порядку sortOrder (1 або -1)
+    .exec();
 
   const paginationData = calculatePaginationData(contactsCount, perPage, page);
 

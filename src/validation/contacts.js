@@ -1,5 +1,6 @@
 import Joi from 'joi';
 
+// ✅ Валідатор для створення контакту (використовується для методів POST і PUT)
 export const createContactSchema = Joi.object({
   name: Joi.string().min(3).max(20).required().messages({
     'string.base': 'Name must be a string',
@@ -10,7 +11,7 @@ export const createContactSchema = Joi.object({
   phoneNumber: Joi.string()
     .min(3)
     .max(20)
-    .pattern(/^\+?[1-9]\d{6,14}$/)
+    .pattern(/^\+?[1-9]\d{6,14}$/) // Додано паттерн для перевірки номера телефону
     .required()
     .messages({
       'string.pattern.base':
@@ -30,6 +31,7 @@ export const createContactSchema = Joi.object({
   isFavourite: Joi.boolean().optional(),
 });
 
+// ✅ Валідатор для оновлення контакту (використовується для методу PATCH)
 export const updateContactSchema = Joi.object({
   name: Joi.string().min(3).max(20).optional().messages({
     'string.base': 'Name must be a string',

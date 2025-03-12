@@ -12,7 +12,7 @@ export const validateBody = (schema) => {
     } catch (err) {
       const error = createHttpError(400, 'Bad Request', {
         errors: err.details.map((error) => error.message),
-        // Або можна просто errors: err.details
+        // Повний об'єкт помилок доступний через 'err.details' --> ми в коді витягуємо тільки повідомлення (error.message)
       });
       next(error);
     }

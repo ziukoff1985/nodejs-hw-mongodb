@@ -26,6 +26,8 @@ const parseNumber = (number, defaultValue) => {
 // ✅ page і perPage будуть переданими числами (з req.query) або defaultValue
 export const parsePaginationParams = (query) => {
   const { page, perPage } = query;
+
+  // Math.max(1, ...) --> гарантує, що значення не будуть меншими за 1
   const parsedPage = Math.max(1, parseNumber(page, 1));
   const parsedPerPage = Math.max(1, parseNumber(perPage, 10));
 

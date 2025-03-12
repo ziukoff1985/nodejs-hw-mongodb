@@ -4,7 +4,7 @@ import { ContactsCollection } from '../db/models/contacts.js';
 const VALID_CONTACT_TYPES =
   ContactsCollection.schema.path('contactType').enumValues || [];
 
-console.log('VALID_CONTACT_TYPES:', VALID_CONTACT_TYPES);
+// console.log('VALID_CONTACT_TYPES:', VALID_CONTACT_TYPES);
 
 // ✅ Функція для парсингу параметру "type" (для поля contactType)
 const parseContactType = (type) => {

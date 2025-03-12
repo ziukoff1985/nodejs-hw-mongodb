@@ -1,11 +1,4 @@
 // ❗❗❗ Функція-парсер параметрів пагінації
-// ✅ Приймає:
-// number --> в нашому випадку це будуть page і perPage
-// defaultValue --> значення за замовчуванням будуть 1 і 10
-// ✅ Перевіряє:
-// Чи є number рядком (typeof number === 'string') --> якщо ні, повертає defaultValue
-// Чи є number числом (Number.isNaN(parseInt(number))) --> якщо ні, повертає defaultValue
-// Якщо всі перевірки проишли успішно --> повертає parsedNumber (завжди числом)
 const parseNumber = (number, defaultValue) => {
   const isString = typeof number === 'string';
   if (!isString) {
@@ -19,15 +12,9 @@ const parseNumber = (number, defaultValue) => {
 };
 
 // ❗❗❗ Функція-парсер параметрів пагінації з запиту клієнта (req.query)
-// ✅ Приймає --> req.query
-// ✅ Повертає --> об'єкт з page і perPage
-// ❗ parsedPage --> це валідний номер сторінки (мінімум 1)
-// ❗ parsedPerPage --> це валідна кількість елементів на сторінці (мінімум 1)
-// ✅ page і perPage будуть переданими числами (з req.query) або defaultValue
 export const parsePaginationParams = (query) => {
   const { page, perPage } = query;
 
-  // Math.max(1, ...) --> гарантує, що значення не будуть меншими за 1
   const parsedPage = Math.max(1, parseNumber(page, 1));
   const parsedPerPage = Math.max(1, parseNumber(perPage, 10));
 

@@ -32,26 +32,12 @@ export const getAllContacts = async ({
       .exec(),
   ]);
 
-  // const contactsCount = await ContactsCollection.find()
-  //   .merge(contactsQuery)
-  //   .countDocuments();
-
-  // const contacts = await contactsQuery
-  //   .skip(skip)
-  //   .limit(limit)
-  //   .sort({ [sortBy]: sortOrder }) // Сортує за полем sortBy у порядку sortOrder (1 або -1)
-  //   .exec();
-
   const paginationData = calculatePaginationData(contactsCount, perPage, page);
 
   return {
     data: contacts,
     ...paginationData,
   };
-
-  // ✅ Попередній варіант з пошуком всіх контактів
-  // const contacts = await ContactsCollection.find();
-  // return contacts;
 };
 
 export const getContactById = async (contactId) => {

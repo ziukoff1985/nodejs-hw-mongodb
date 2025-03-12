@@ -14,11 +14,6 @@ import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 // ✅ Контроллер-обробник для отримання всіх контактів
-// Витягує:
-// параметри пагінації (page і perPage) --> використовуючи утиліту parsePaginationParams для валідації
-// параметри сортування (sortBy і sortOrder) --> використовуючи утиліту parseSortParams для валідації
-// Викликає сервіс-логіку getAllContacts
-// Повертає: статус 200, повідомлення про успішне отримання контактів, і contacts --> об'єкт з масивом контактів та інформацією про пагінацію (метадані)
 export const getAllContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);

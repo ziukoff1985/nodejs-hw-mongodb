@@ -35,8 +35,8 @@ export const getAllContacts = async ({
   const paginationData = calculatePaginationData(contactsCount, perPage, page);
 
   return {
-    data: contacts,
-    ...paginationData,
+    data: contacts, // масив з контактами
+    ...paginationData, // метадані пагінації
   };
 };
 

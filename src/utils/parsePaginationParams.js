@@ -1,4 +1,4 @@
-// ❗❗❗ Функція-парсер параметрів пагінації
+// ❗❗❗ Функція-парсер параметрів (page i perPage) --> перевірка на string i не NaN
 const parseNumber = (number, defaultValue) => {
   const isString = typeof number === 'string';
   if (!isString) {

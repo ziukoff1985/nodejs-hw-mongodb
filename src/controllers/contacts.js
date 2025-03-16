@@ -19,6 +19,7 @@ export const getAllContactsController = async (req, res) => {
   const { sortBy, sortOrder } = parseSortParams(req.query);
   const filter = parseFilterParams(req.query);
 
+  // Викликаємо функцію-сервіс для отримання контактів
   const contacts = await getAllContacts({
     page,
     perPage,

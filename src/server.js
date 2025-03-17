@@ -2,10 +2,11 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 import { getEnvVar } from './utils/getEnvVar.js';
-import contactsRouter from './routers/contacts.js';
-import rootRouter from './routers/rootRouter.js';
+// import contactsRouter from './routers/contacts.js';
+// import rootRouter from './routers/rootRouter.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import router from './routers/index.js';
 
 const PORT = parseInt(getEnvVar('PORT', 3000));
 
@@ -28,8 +29,11 @@ export const setupServer = () => {
     }),
   );
 
-  app.use(rootRouter);
-  app.use(contactsRouter);
+  // ❗ всі роути підключені через src/routers/index.js
+  // app.use(rootRouter);
+  // app.use(contactsRouter);
+
+  app.use(router);
 
   app.use('*', notFoundHandler);
 

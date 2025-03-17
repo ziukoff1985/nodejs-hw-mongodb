@@ -24,36 +24,29 @@ const jsonParser = express.json({
   limit: '100kb', // обмеження на розмір тіла запиту
 });
 
-router.get('/contacts', ctrlWrapper(getAllContactsController));
+// прибираємо path "/contacts" --> оскільки створили хаб маршрутів src/routers/index.js (було '/contacts' --> стало '/')
+router.get('/', ctrlWrapper(getAllContactsController));
 
 // ✅ Важливо! ❗ Порядок middleware: isValidId → ctrlWrapper
-router.get(
-  '/contacts/:contactId',
-  isValidId,
-  ctrlWrapper(getContactByIdController),
-);
-router.delete(
-  '/contacts/:contactId',
-  isValidId,
-  ctrlWrapper(deleteContactController),
-);
+router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
+router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
 // ✅ Важливо! ❗ Порядок middleware: jsonParser → validateBody → ctrlWrapper
 router.post(
-  '/contacts',
+  '/',
   jsonParser,
   validateBody(createContactSchema),
   ctrlWrapper(createNewContactController),
 );
 router.put(
-  '/contacts/:contactId',
+  '/:contactId',
   jsonParser,
   isValidId,
   validateBody(createContactSchema),
   ctrlWrapper(putContactController),
 );
 router.patch(
-  '/contacts/:contactId',
+  '/:contactId',
   jsonParser,
   isValidId,
   validateBody(updateContactSchema),

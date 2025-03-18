@@ -18,6 +18,7 @@ import { isValidId } from '../middlewares/isValidId.js';
 
 const router = Router();
 
+// ❗ Парсер JSON для req.body --> обов'язково прописувати у всіх файлах роутерів
 const jsonParser = express.json({
   // Вказуємо, що ми очікуємо JSON-дані або JSON:API
   type: ['application/json', 'application/vnd.api+json'],

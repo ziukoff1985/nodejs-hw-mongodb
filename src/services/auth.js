@@ -1,6 +1,11 @@
-import { UsersCollection } from '../db/models/user.js';
 import createHttpError from 'http-errors';
+import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
+
+import { UsersCollection } from '../db/models/user.js';
+import { SessionsCollection } from '../db/models/session.js';
+
+import { FIFTEEN_MINUTES, THIRTY_DAYS } from '../constants/index.js';
 
 // ✅ Асинхронна функція-сервіс:
 // перевірка чи є користувач з такою емейл-адресою в базі --> якщо є --> викидає помилку
@@ -35,22 +40,48 @@ export const registerUser = async (payload) => {
 
 // ✅ Асинхронна функція-сервіс для входу користувача
 // payload --> об'єкт, який містить дані користувача (email і пароль)
-// existingUser --> об'єкт користувача, який повертає метод findOne({ email: payload.email }) або null, якщо користувача не знайдено
-// isPasswordEqual --> булева змінна (true або false), яка вказує, чи паролі (який ввів користувач і хешований з бази) співпадають
+
 export const loginUser = async (payload) => {
+  // existingUser --> об'єкт користувача, який повертає метод findOne({ email: payload.email }) або null, якщо користувача не знайдено
   const existingUser = await UsersCollection.findOne({ email: payload.email });
 
+  // якщо користувача не знайдено (existingUser === null) --> викидає помилку
   if (!existingUser) {
     throw createHttpError(404, 'User not found');
   }
 
+  // isPasswordEqual --> булева змінна (true або false), яка вказує, чи паролі (який ввів користувач і хешований з бази) співпадають
   // метод bcrypt.compare --> використовується для порівняння хешованих паролів (який ввів користувач і хешований з бази)
   const isPasswordEqual = await bcrypt.compare(
     payload.password,
     existingUser.password,
   );
 
+  // якщо паролі не співпадають (isPasswordEqual === false) --> викидає помилку
   if (!isPasswordEqual) {
     throw createHttpError(401, 'Unauthorized');
   }
+
+  // асинхронний запит до колекції SessionsCollection для видалення попередньої сесії користувача з відповідним _id (видалення старої сесії)
+  await SessionsCollection.deleteOne({ userId: existingUser._id });
+
+  // генерація токенів (за допомогою randomBytes)
+  // accessToken --> токен доступу
+  // refreshToken --> токен оновлення (для accessToken)
+  // 30 --> кількість байтів, які будуть згенеровані
+  // base64 --> кодування в base64
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
+
+  // асинхронний запит до колекції SessionsCollection для створення нової сесії користувача
+  // existingUser._id --> _id користувача, який залогінився (тобто -> ця сесія належить користувачу з таким _id у users)
+  // accessToken --> токен доступу на 15 хвилин
+  // refreshToken --> токен оновлення (для accessToken) на 30 днів
+  return await SessionsCollection.create({
+    userId: existingUser._id,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAYS),
+  });
 };

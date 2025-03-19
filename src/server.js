@@ -1,6 +1,7 @@
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { getEnvVar } from './utils/getEnvVar.js';
 // import contactsRouter from './routers/contacts.js';
 // import rootRouter from './routers/rootRouter.js';
@@ -16,6 +17,8 @@ export const setupServer = () => {
   // ❗ app.use(express.json()); --> перенесено в src/routers/contacts.js
 
   app.use(cors());
+
+  app.use(cookieParser()); // парсер cookies
 
   app.use(
     pino({

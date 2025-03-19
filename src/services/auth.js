@@ -21,6 +21,8 @@ export const registerUser = async (payload) => {
   // метод bcrypt.hash --> хеширує пароль
   const hashedPassword = await bcrypt.hash(payload.password, 10);
 
+  // ❗ можна просто перевизначити payload.password не створюючи hashedPassword
+
   // Для дебагу --> виводить в консоль пароль, який ввів користувач і хешований пароль
   if (process.env.NODE_ENV === 'development') {
     console.log('payload.password:', payload.password);

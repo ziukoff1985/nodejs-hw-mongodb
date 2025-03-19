@@ -1,3 +1,4 @@
+import { THIRTY_DAYS } from '../constants/index.js';
 import { loginUser, registerUser } from '../services/auth.js';
 
 // ✅ Контролер для реєстрації користувача
@@ -22,12 +23,37 @@ export const registerUserController = async (req, res) => {
 };
 
 // ✅ Контролер для входу користувача
+// session --> об'єкт, який повертає метод UsersCollection.login(payload) з сервісу src/services/auth.js
 // Викликає асинхронну функцію-сервіс loginUser --> передає req.body
 export const loginUserController = async (req, res) => {
-  await loginUser(req.body);
+  const session = await loginUser(req.body);
 
+  // ✅ Встановлюємо cookie --> для refreshToken
+  // httpOnly --> вказує, що cookie доступний тільки для HTTP-запитів
+  // expires --> вказує, скільки часу cookie буде діяти
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + THIRTY_DAYS),
+    // secure: true, // cookies надсилаються тільки через HTTPS
+    // sameSite: 'none', // дозволяє крос-доменні запити (якщо потрібен фронтенд на іншому домені)
+  });
+
+  // ✅ Встановлюємо cookie --> для sessionId
+  // ❗ додаємо toString() --> для явного перетворення session._id у рядок перед передачею в res.cookie()
+  // ❗ Це потрібно щоб sessionId в файлі cookie і _id в базі даних збігалися
+  res.cookie('sessionId', session._id.toString(), {
+    httpOnly: true,
+    expires: new Date(Date.now() + THIRTY_DAYS),
+    // secure: true,
+    // sameSite: 'none',
+  });
+
+  // відповідь --> повертає статус 200, повідомлення і об'єкт з accessToken
   res.status(200).json({
     status: 200,
-    message: 'Successfully logged in!',
+    message: 'Successfully logged in an user!',
+    data: {
+      accessToken: session.accessToken,
+    },
   });
 };

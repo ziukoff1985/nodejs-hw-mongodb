@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 
 import { UsersCollection } from '../db/models/user.js';
 import { SessionsCollection } from '../db/models/session.js';
@@ -47,9 +48,9 @@ export const loginUser = async (payload) => {
   // existingUser --> об'єкт користувача, який повертає метод findOne({ email: payload.email }) або null, якщо користувача не знайдено
   const existingUser = await UsersCollection.findOne({ email: payload.email });
 
-  // якщо користувача не знайдено (existingUser === null) --> викидає помилку
+  // якщо користувача (ідентифікуємо по email) не знайдено (existingUser === null) --> викидає помилку
   if (!existingUser) {
-    throw createHttpError(404, 'User not found');
+    throw createHttpError(401, 'Email or password is wrong');
   }
 
   // isPasswordEqual --> булева змінна (true або false), яка вказує, чи паролі (який ввів користувач і хешований з бази) співпадають
@@ -61,7 +62,7 @@ export const loginUser = async (payload) => {
 
   // якщо паролі не співпадають (isPasswordEqual === false) --> викидає помилку
   if (!isPasswordEqual) {
-    throw createHttpError(401, 'Unauthorized');
+    throw createHttpError(401, 'Email or password is wrong');
   }
 
   // асинхронний запит до колекції SessionsCollection для видалення попередньої сесії користувача з відповідним _id (видалення старої сесії)
@@ -86,4 +87,26 @@ export const loginUser = async (payload) => {
     accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
     refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAYS),
   });
+};
+
+// ✅ Асинхронна функція-сервіс для виходу користувача
+// sessionId --> _id актуальної сесії (документу в колекції Sessions) користувача --> витягується з cookies (req.cookies) в контролері logoutUserController
+export const logoutUser = async (sessionId, refreshToken) => {
+  // якщо _id актуальної сесії користувача не валідний (якщо не є ObjectId) --> викидає помилку
+  if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+    throw createHttpError(400, 'Invalid session ID');
+  }
+  // асинхронний запит до колекції SessionsCollection для пошуку і видалення попередньої сесії користувача з відповідними _id і refreshToken
+  const session = await SessionsCollection.findOneAndDelete({
+    _id: sessionId,
+    refreshToken: refreshToken,
+  });
+
+  // Якщо сесії немає --> викидаємо помилку
+  if (!session) {
+    throw createHttpError(401, 'Session not found or invalid token');
+  }
+
+  // повертаємо сесію
+  return session;
 };

@@ -1,9 +1,9 @@
 import { THIRTY_DAYS } from '../constants/index.js';
-import { loginUser, registerUser } from '../services/auth.js';
+import { loginUser, logoutUser, registerUser } from '../services/auth.js';
 
 // ✅ Контролер для реєстрації користувача
 // Викликає асинхронну функцію-сервіс registerUser --> передає req.body
-// ✅ Реєструє нового користувача --> повертає статус 201, повідомлення і об'єкт зареєстрованого користувача
+// Реєструє нового користувача --> повертає статус 201, повідомлення і об'єкт зареєстрованого користувача (❗ без паролю)
 export const registerUserController = async (req, res) => {
   const user = await registerUser(req.body);
 
@@ -56,4 +56,22 @@ export const loginUserController = async (req, res) => {
       accessToken: session.accessToken,
     },
   });
+};
+
+// ✅ Контролер для вихіду користувача
+export const logoutUserController = async (req, res) => {
+  // Отримуємо sessionId і refreshToken з cookies (деструктуризація)
+  const { sessionId, refreshToken } = req.cookies;
+
+  // Перевіряємо sessionId і refreshToken в cookies
+  if (sessionId && refreshToken) {
+    // Асинхронний запит до колекції SessionsCollection для видалення попередньої сесії користувача з відповідним _id
+    await logoutUser(sessionId, refreshToken);
+  }
+  // Видаляємо sessionId і refreshToken з cookies
+  res.clearCookie('sessionId');
+  res.clearCookie('refreshToken');
+
+  // відповідь --> повертає тількистатус 204 без повідомлення
+  res.status(204).send();
 };

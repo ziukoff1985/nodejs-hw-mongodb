@@ -110,3 +110,58 @@ export const logoutUser = async (sessionId, refreshToken) => {
   // повертаємо сесію
   return session;
 };
+
+// ✅ Функція для генерації нових токенів (accessToken і refreshToken)
+const createNewSession = () => {
+  // генерація токенів (за допомогою randomBytes)
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
+
+  // повертаємо об'єкт з accessToken і refreshToken
+  return {
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAYS),
+  };
+};
+
+// ✅ Асинхронна функція-сервіс для оновлення сесії користувача (refresh)
+export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
+  // робимо запит на знаходження попередньої сесії користувача з відповідним _id і refreshToken
+  const currentSession = await SessionsCollection.findOne({
+    _id: sessionId,
+    refreshToken: refreshToken,
+  });
+
+  // якщо сесії немає (currentSession === null) --> викидаємо помилку
+  if (!currentSession) {
+    throw createHttpError(401, 'Session not found or invalid token');
+  }
+
+  // перевіряємо чи закінчився термін дії refreshToken
+  const isSessionTokenExpired =
+    new Date() > new Date(currentSession.refreshTokenValidUntil);
+
+  // якщо закінчився термін дії refreshToken --> викидаємо помилку
+  if (isSessionTokenExpired) {
+    throw createHttpError(401, 'Session token is expired');
+  }
+
+  // створюємо нову сесію (за допомогою createNewSession)
+  const newSession = createNewSession();
+
+  // видаляємо попередню сесію користувача (з відповідним _id і refreshToken)
+  await SessionsCollection.deleteOne({
+    _id: sessionId,
+    refreshToken: refreshToken,
+  });
+
+  // Створюємо нову сесію користувача і повертаємо їі
+  // Повертаємо об'єкт:
+  // userId -> userId попередньої сесії користувача і всі поля нової сесіі (accessToken, refreshToken, accessTokenValidUntil, refreshTokenValidUntil)
+  return await SessionsCollection.create({
+    userId: currentSession.userId,
+    ...newSession,
+  });
+};

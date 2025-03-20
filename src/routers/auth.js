@@ -1,10 +1,10 @@
 // ✅ Роутери для реєстрації, логіну і виходу користувача
-
 import express, { Router } from 'express';
 import { loginUserSchema, registerUserSchema } from '../validation/auth.js';
 import {
   loginUserController,
   logoutUserController,
+  refreshUserSessionController,
   registerUserController,
 } from '../controllers/auth.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
@@ -40,5 +40,9 @@ router.post(
 // ✅ Роут для виходу користувача
 // path: '/auth/logout' --> контролер виходу (logoutUserController)
 router.post('/logout', ctrlWrapper(logoutUserController));
+
+// ✅ Роут для оновлення сесії користувача (refresh)
+// path: '/auth/refresh' --> контролер оновлення сесії (refreshUserSessionController)
+router.post('/refresh', ctrlWrapper(refreshUserSessionController));
 
 export default router;

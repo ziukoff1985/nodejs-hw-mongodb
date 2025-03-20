@@ -1,5 +1,10 @@
 import { THIRTY_DAYS } from '../constants/index.js';
-import { loginUser, logoutUser, registerUser } from '../services/auth.js';
+import {
+  loginUser,
+  logoutUser,
+  refreshUsersSession,
+  registerUser,
+} from '../services/auth.js';
 
 // ✅ Контролер для реєстрації користувача
 // Викликає асинхронну функцію-сервіс registerUser --> передає req.body
@@ -74,4 +79,44 @@ export const logoutUserController = async (req, res) => {
 
   // відповідь --> повертає тількистатус 204 без повідомлення
   res.status(204).send();
+};
+
+// ✅ Функція для встановлення нової сесії -> використовуємо в контролері refreshUserSessionController
+// Приймає: 'res' --> об'єкт відповіді і 'session' --> об'єкт, який повертає сервіс refreshUsersSession
+const setupNewSession = (res, session) => {
+  // ✅ Встановлюємо cookie --> для refreshToken
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + THIRTY_DAYS),
+  });
+
+  // ✅ Встановлюємо cookie --> для sessionId
+  // ❗ додаємо toString() --> для явного перетворення session._id у "чистий" рядок перед передачею в res.cookie()
+  res.cookie('sessionId', session._id.toString(), {
+    httpOnly: true,
+    expires: new Date(Date.now() + THIRTY_DAYS),
+  });
+};
+
+// ✅ Контролер для обновлення сесії (refresh)
+export const refreshUserSessionController = async (req, res) => {
+  // Асинхронний запит до сервісу refreshUsersSession
+  // Передаємо sessionId і refreshToken з cookies
+  const newSession = await refreshUsersSession({
+    sessionId: req.cookies.sessionId,
+    refreshToken: req.cookies.refreshToken,
+  });
+
+  // Встановлюємо нову сесію
+  // Приймаємо 'res' --> об'єкт відповіді і 'newSession' --> об'єкт, який повертає сервіс refreshUsersSession
+  setupNewSession(res, newSession);
+
+  // відповідь --> повертає статус 200, повідомлення і об'єкт з accessToken
+  res.json({
+    status: 200,
+    message: 'Successfully refreshed a session!',
+    data: {
+      accessToken: newSession.accessToken,
+    },
+  });
 };

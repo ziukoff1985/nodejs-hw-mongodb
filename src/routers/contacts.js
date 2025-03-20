@@ -9,12 +9,15 @@ import {
 } from '../controllers/contacts.js';
 
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+
+import { isValidId } from '../middlewares/isValidId.js';
+import { authenticate } from '../middlewares/authenticate.js';
 import { validateBody } from '../middlewares/validateBody.js';
+
 import {
   createContactSchema,
   updateContactSchema,
 } from '../validation/contacts.js';
-import { isValidId } from '../middlewares/isValidId.js';
 
 const router = Router();
 
@@ -24,6 +27,9 @@ const jsonParser = express.json({
   type: ['application/json', 'application/vnd.api+json'],
   limit: '100kb', // обмеження на розмір тіла запиту
 });
+
+// ✅ Підключаємо middleware authenticate  -> використовується при логінізації -> надає доступ залогіненому користувачу доступ до маршрутівконтактів
+router.use(authenticate);
 
 // прибираємо path "/contacts" --> оскільки створили хаб маршрутів src/routers/index.js (було '/contacts' --> стало '/')
 router.get('/', ctrlWrapper(getAllContactsController));

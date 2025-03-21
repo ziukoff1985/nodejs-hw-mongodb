@@ -43,12 +43,16 @@ export const authenticate = async (req, res, next) => {
     return next(createHttpError(401, 'Access token is expired'));
   }
 
+  // Асинхронний запит до колекції UsersCollection для пошуку користувача -> пошук за _id
+  // currentUser -> об'єкт користувача з полями відповідно до схеми (name, email, password)
   const currentUser = await UsersCollection.findById(currentSession.userId);
 
+  // Перевірка на наявність користувача -> якщо немає -> повертаємо помилку
   if (!currentUser) {
     return next(createHttpError(401, 'User not found'));
   }
 
+  // додаємо властивість user до об'єкту запиту req -> присвоюємо значення currentUser
   req.user = currentUser;
   next();
 };

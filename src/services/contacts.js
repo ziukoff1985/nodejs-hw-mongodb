@@ -7,11 +7,12 @@ export const getAllContacts = async ({
   sortBy = 'name',
   sortOrder = 1, // Альтернативний варіант --> sortOrder = SORT_ORDER.ASC
   filter = {},
+  userId,
 }) => {
   const limit = perPage; // limit — обмежує кількість повернутих контактів
   const skip = (page - 1) * perPage; // skip — пропускає записи попередніх сторінок
 
-  const contactsQuery = ContactsCollection.find();
+  const contactsQuery = ContactsCollection.find({ userId });
 
   if (filter.contactType) {
     // Фільтр за типом контакту (наприклад, "personal", "work", "home")
@@ -40,8 +41,16 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = async (contactId) => {
-  const contact = await ContactsCollection.findById(contactId);
+// ✅ Старий варіант getContactById -> без пошуку за userId (по id користувача який створив контакт)
+// export const getContactById = async (contactId) => {
+//   const contact = await ContactsCollection.findById(contactId);
+//   return contact;
+// };
+export const getContactById = async (contactId, userId) => {
+  const contact = await ContactsCollection.findOne({
+    _id: contactId,
+    userId: userId, // Додаємо userId із req.user (посилання на id користувача), який створив контакт
+  });
   return contact;
 };
 
@@ -50,16 +59,22 @@ export const createNewContact = async (payload) => {
   return newContact;
 };
 
-export const deleteContact = async (contactId) => {
+export const deleteContact = async (contactId, userId) => {
   const deletedContact = await ContactsCollection.findOneAndDelete({
     _id: contactId,
+    userId: userId, // Додаємо userId із req.user (посилання на id користувача), який створив контакт
   });
   return deletedContact;
 };
 
-export const patchUpdateContact = async (contactId, payload, options = {}) => {
+export const patchUpdateContact = async (
+  contactId,
+  payload,
+  userId,
+  options = {},
+) => {
   const updatedContact = await ContactsCollection.findOneAndUpdate(
-    { _id: contactId },
+    { _id: contactId, userId: userId },
     { $set: payload }, // $set для часткового оновлення документа
     { new: true, ...options },
   );
@@ -69,9 +84,14 @@ export const patchUpdateContact = async (contactId, payload, options = {}) => {
   return updatedContact;
 };
 
-export const putUpdateContact = async (contactId, payload, options = {}) => {
+export const putUpdateContact = async (
+  contactId,
+  payload,
+  userId,
+  options = {},
+) => {
   const updatedContact = await ContactsCollection.findOneAndUpdate(
-    { _id: contactId },
+    { _id: contactId, userId: userId },
     payload,
     { new: true, includeResultMetadata: true, ...options },
   );

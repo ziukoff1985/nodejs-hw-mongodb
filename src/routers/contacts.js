@@ -18,6 +18,7 @@ import {
   createContactSchema,
   updateContactSchema,
 } from '../validation/contacts.js';
+import { checkUser } from '../middlewares/checkUser.js';
 
 const router = Router();
 
@@ -28,8 +29,11 @@ const jsonParser = express.json({
   limit: '100kb', // обмеження на розмір тіла запиту
 });
 
-// ✅ Підключаємо middleware authenticate  -> використовується при логінізації -> надає доступ залогіненому користувачу доступ до маршрутівконтактів
+// ✅ Підключаємо middleware 'authenticate'  -> використовується при логінізації (аутентифікації) до маршрутів '/contacts' -> додає властивість req.user в об'єкт запиту req
 router.use(authenticate);
+
+// ✅ Підключаємо middleware 'checkUser' -> наступний крок після middleware 'authenticate' -> використовується при перевірці прав користувача (авторизації) -> перевіряє наявність властивості req.user в об'єкті запиту req + перевіряє приналежність контакта (_id: req.params.contactId) користувачу (userId: req.user._id)
+router.use(checkUser);
 
 // прибираємо path "/contacts" --> оскільки створили хаб маршрутів src/routers/index.js (було '/contacts' --> стало '/')
 router.get('/', ctrlWrapper(getAllContactsController));

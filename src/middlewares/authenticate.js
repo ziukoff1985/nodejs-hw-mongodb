@@ -4,7 +4,7 @@ import { UsersCollection } from '../db/models/user.js';
 
 // ✅ Middleware для перевірки аутентифікації (використовується при логінізації)
 export const authenticate = async (req, res, next) => {
-  // const authHeader = req.headers.authorization;
+  // const authHeader = req.headers.authorization -> 🍳 як альтернатива???
   // Витягуємо заголовок авторизації -> використовуємо метод get()
   // authHeader -> має бути рядком типу Bearer <token>
   const authHeader = req.get('Authorization');

@@ -18,6 +18,7 @@ export const getAllContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
   const filter = parseFilterParams(req.query);
+  const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
 
   // Викликаємо функцію-сервіс для отримання контактів
   const contacts = await getAllContacts({
@@ -26,21 +27,27 @@ export const getAllContactsController = async (req, res) => {
     sortBy,
     sortOrder,
     filter,
+    userId, // Додаємо userId із req.user (посилання на id користувача), який створив контакт
   });
 
   res.status(200).json({
     status: 200,
-    message: `Successfully found contacts! Page ${contacts.page} of ${contacts.totalPages}, ${contacts.perPage} of ${contacts.totalItems} contacts`,
+    message: `Successfully found contacts! Page ${contacts.page} of ${contacts.totalPages}, shown ${contacts.data.length} pcs of ${contacts.totalItems} contacts`,
     data: contacts,
   });
 };
 
 export const getContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await getContactById(contactId);
+  const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
+
+  const contact = await getContactById(contactId, userId);
 
   if (!contact) {
-    throw createHttpError(404, 'Contact not found');
+    throw createHttpError(
+      404,
+      'Contact not found or you do not have permission',
+    );
   }
 
   res.status(200).json({
@@ -71,7 +78,10 @@ export const createNewContactController = async (req, res) => {
   //   );
   // }
 
-  const newContact = await createNewContact(req.body);
+  const newContact = await createNewContact({
+    ...req.body,
+    userId: req.user._id, // Додаємо userId із req.user (посилання на id користувача), який створив контакт
+  });
 
   res.status(201).json({
     status: 201,
@@ -82,10 +92,16 @@ export const createNewContactController = async (req, res) => {
 
 export const deleteContactController = async (req, res, next) => {
   const { contactId } = req.params;
-  const deletedContact = await deleteContact(contactId);
+
+  const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
+
+  const deletedContact = await deleteContact(contactId, userId);
 
   if (!deletedContact) {
-    throw createHttpError(404, 'Contact not found');
+    throw createHttpError(
+      404,
+      'Contact not found or you do not have permission',
+    );
   }
 
   // ✅ Альтернативний варіант обробки помилки
@@ -99,10 +115,16 @@ export const deleteContactController = async (req, res, next) => {
 
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await patchUpdateContact(contactId, req.body);
+
+  const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
+
+  const result = await patchUpdateContact(contactId, req.body, userId);
 
   if (!result) {
-    throw createHttpError(404, 'Contact not found');
+    throw createHttpError(
+      404,
+      'Contact not found or you do not have permission',
+    );
   }
 
   res.status(200).json({
@@ -114,6 +136,8 @@ export const patchContactController = async (req, res, next) => {
 
 export const putContactController = async (req, res, next) => {
   const { contactId } = req.params;
+
+  const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
 
   // ✅ Старий варіант валідації --> до підключення валідатора Joi
   // const existingContact = await getContactById(contactId);
@@ -133,10 +157,15 @@ export const putContactController = async (req, res, next) => {
   //   }
   // }
 
-  const result = await putUpdateContact(contactId, req.body, { upsert: true });
+  const result = await putUpdateContact(contactId, req.body, userId, {
+    upsert: true,
+  });
 
   if (!result) {
-    throw createHttpError(404, 'Contact not found');
+    throw createHttpError(
+      404,
+      'Contact not found or you do not have permission',
+    );
   }
   const statusCode = result.isNew ? 201 : 200;
 

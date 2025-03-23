@@ -33,10 +33,8 @@ export const getAllContactsController = async (req, res) => {
   res.status(200).json({
     status: 200,
     message: `Successfully found contacts! Page ${contacts.page} of ${contacts.totalPages}, shown ${contacts.data.length} pcs of ${contacts.totalItems} contacts`,
-    data: {
-      userId: userId.toString(), // Додаємо userId із req.user (посилання на id користувача), який створив контакт
-      data: contacts,
-    },
+    // userId: userId.toString(), // Додаємо userId із req.user (посилання на id користувача), який створив контакт
+    data: contacts,
   });
 };
 

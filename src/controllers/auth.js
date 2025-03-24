@@ -4,6 +4,7 @@ import {
   logoutUser,
   refreshUsersSession,
   registerUser,
+  requestResetToken,
 } from '../services/auth.js';
 
 // ✅ Контролер для реєстрації користувача
@@ -63,7 +64,7 @@ export const loginUserController = async (req, res) => {
   });
 };
 
-// ✅ Контролер для вихіду користувача
+// ✅ Контролер для виходу користувача
 export const logoutUserController = async (req, res) => {
   // Отримуємо sessionId і refreshToken з cookies (деструктуризація)
   const { sessionId, refreshToken } = req.cookies;
@@ -118,5 +119,18 @@ export const refreshUserSessionController = async (req, res) => {
     data: {
       accessToken: newSession.accessToken,
     },
+  });
+};
+
+// ✅ Контролер відновлення пароля (запит на відновлення пароля)
+export const requestResetEmailController = async (req, res) => {
+  // Асинхронний запит до сервісу requestResetToken
+  await requestResetToken(req.body.email);
+
+  // відповідь --> повертає статус 200, повідомлення і об'єкт 'data'
+  res.status(200).json({
+    status: 200,
+    message: 'Reset password email was successfully sent!',
+    data: { email: req.body.email },
   });
 };

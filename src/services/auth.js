@@ -1,3 +1,8 @@
+import jwt from 'jsonwebtoken';
+import { SMTP } from '../constants/index.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
+import { sendEmail } from '../utils/sendMail.js';
+
 import createHttpError from 'http-errors';
 import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
@@ -43,7 +48,6 @@ export const registerUser = async (payload) => {
 
 // ✅ Асинхронна функція-сервіс для входу користувача
 // payload --> об'єкт, який містить дані користувача (email і пароль)
-
 export const loginUser = async (payload) => {
   // existingUser --> об'єкт користувача, який повертає метод findOne({ email: payload.email }) або null, якщо користувача не знайдено
   const existingUser = await UsersCollection.findOne({ email: payload.email });
@@ -163,5 +167,35 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   return await SessionsCollection.create({
     userId: currentSession.userId,
     ...newSession,
+  });
+};
+
+// ✅ Асинхронна функція-сервіс для запиту на відновлення пароля (reset)
+export const requestResetToken = async (email) => {
+  // робимо запит на знаходження користувача з відповідним email
+  const user = await UsersCollection.findOne({ email: email });
+
+  // якщо користувача немає --> викидаємо помилку
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  // створюємо токен для відновлення пароля
+  // jwt.sign(payload, secretOrPrivateKey, [options, callback])
+  // payload -> { sub: user._id, email: user.email }
+  // secret -> JWT_SECRET
+  // options (термін дії) -> { expiresIn: '15m' }
+  const resetToken = jwt.sign(
+    { sub: user._id, email: user.email },
+    getEnvVar('JWT_SECRET'),
+    { expiresIn: '15m' },
+  );
+
+  // надсилаємо лист з посиланням -> resetToken встановлено прямо в <a href>
+  await sendEmail({
+    from: getEnvVar(SMTP.SMTP_FROM), // email відправника
+    to: email, // email отримувача
+    subject: 'Reset your password', // тема листа
+    html: `<p>Click <a href="http://localhost:3000/reset-password?token=${resetToken}">here</a> to reset your password!</p>`, // текст листа з посиланням
   });
 };

@@ -1,11 +1,16 @@
 // ✅ Роутери для реєстрації, логіну і виходу користувача
 import express, { Router } from 'express';
-import { loginUserSchema, registerUserSchema } from '../validation/auth.js';
+import {
+  loginUserSchema,
+  registerUserSchema,
+  requestResetEmailSchema,
+} from '../validation/auth.js';
 import {
   loginUserController,
   logoutUserController,
   refreshUserSessionController,
   registerUserController,
+  requestResetEmailController,
 } from '../controllers/auth.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
@@ -44,5 +49,14 @@ router.post('/logout', ctrlWrapper(logoutUserController));
 // ✅ Роут для оновлення сесії користувача (refresh)
 // path: '/auth/refresh' --> контролер оновлення сесії (refreshUserSessionController)
 router.post('/refresh', ctrlWrapper(refreshUserSessionController));
+
+// ✅ Роут для запиту на відновлення пароля (reset password)
+// path: '/auth/request-reset-email' --> валідація тіла запиту (через схему requestResetEmailSchema) --> контролер запиту (requestResetEmailController)
+router.post(
+  '/request-reset-email',
+  jsonParser,
+  validateBody(requestResetEmailSchema),
+  ctrlWrapper(requestResetEmailController),
+);
 
 export default router;

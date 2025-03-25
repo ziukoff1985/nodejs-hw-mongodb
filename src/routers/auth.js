@@ -4,6 +4,7 @@ import {
   loginUserSchema,
   registerUserSchema,
   requestResetEmailSchema,
+  resetPasswordSchema,
 } from '../validation/auth.js';
 import {
   loginUserController,
@@ -11,6 +12,7 @@ import {
   refreshUserSessionController,
   registerUserController,
   requestResetEmailController,
+  resetPasswordController,
 } from '../controllers/auth.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
@@ -50,13 +52,22 @@ router.post('/logout', ctrlWrapper(logoutUserController));
 // path: '/auth/refresh' --> контролер оновлення сесії (refreshUserSessionController)
 router.post('/refresh', ctrlWrapper(refreshUserSessionController));
 
-// ✅ Роут для запиту на відновлення пароля (reset password)
+// ✅ Роут для запиту на надсилання листа на відновлення пароля
 // path: '/auth/request-reset-email' --> валідація тіла запиту (через схему requestResetEmailSchema) --> контролер запиту (requestResetEmailController)
 router.post(
   '/request-reset-email',
   jsonParser,
   validateBody(requestResetEmailSchema),
   ctrlWrapper(requestResetEmailController),
+);
+
+// ✅ Роут для створення (відновлення) нового пароля - після запиту на надсилання листа на відновлення пароля
+// path: '/reset-password' --> валідація тіла запиту (через схему resetPasswordSchema) --> контролер відновлення пароля (resetPasswordController)
+router.post(
+  '/reset-password',
+  jsonParser,
+  validateBody(resetPasswordSchema),
+  ctrlWrapper(resetPasswordController),
 );
 
 export default router;

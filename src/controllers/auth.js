@@ -5,6 +5,7 @@ import {
   refreshUsersSession,
   registerUser,
   requestResetToken,
+  resetPassword,
 } from '../services/auth.js';
 
 // ✅ Контролер для реєстрації користувача
@@ -122,7 +123,7 @@ export const refreshUserSessionController = async (req, res) => {
   });
 };
 
-// ✅ Контролер відновлення пароля (запит на відновлення пароля)
+// ✅ Контролер відновлення пароля (запит на відновлення пароля по пошті)
 export const requestResetEmailController = async (req, res) => {
   // Асинхронний запит до сервісу requestResetToken
   await requestResetToken(req.body.email);
@@ -131,6 +132,19 @@ export const requestResetEmailController = async (req, res) => {
   res.status(200).json({
     status: 200,
     message: 'Reset password email was successfully sent!',
-    data: { email: req.body.email },
+    data: {},
+  });
+};
+
+// ✅ Контролер встановлення нового пароля (коли користувач перейшов за посиланням з листа на відновлення пароля)
+export const resetPasswordController = async (req, res) => {
+  // Асинхронний запит до сервісу resetPassword
+  await resetPassword(req.body);
+
+  // відповідь --> повертає статус 200, повідомлення і об'єкт 'data'
+  res.status(200).json({
+    status: 200,
+    message: 'Password was successfully reset!',
+    data: {},
   });
 };

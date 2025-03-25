@@ -215,11 +215,50 @@ export const requestResetToken = async (email) => {
     link: `${getEnvVar('APP_DOMAIN')}/reset-password?token=${resetToken}`,
   });
 
-  // надсилаємо лист з посиланням -> resetToken встановлено прямо в <a href>
+  // надсилаємо лист з посиланням -> передаємо дані для відправки: from, to, subject, html (html - шаблон тексту листа з посиланням)
   await sendEmail({
     from: getEnvVar(SMTP.SMTP_FROM), // email відправника -> borismihajlovic856@gmail.com (з .env через getEnvVar)
     to: email, // email отримувача (email користувача)
     subject: 'Reset your password', // тема листа
     html: html, // текст листа (з шаблону src/templates/reset-password-email.html)
   });
+};
+
+// ✅ Асинхронна функція-сервіс для створення нового пароля
+export const resetPassword = async (payload) => {
+  // створюємо змінну entries, яка буде зберігати payload
+  let entries;
+
+  // перевіряємо чи є payload.token валідним токеном
+  // jwt.verify -> розшифровує токен з листа використвуючи секретний ключ (JWT_SECRET з .env через getEnvVar)
+  // якщо токен валідний -> повертає payload (змінну entries) -> { sub:..., email:..., iat.., exp:... }
+  // якщо токен невалідний -> викидає помилку
+  try {
+    entries = jwt.verify(payload.token, getEnvVar('JWT_SECRET'));
+  } catch (error) {
+    if (error instanceof Error) {
+      throw createHttpError(401, error.message);
+    }
+    throw error;
+  }
+
+  // перевіряємо чи є користувач з таким email і _id в базі
+  const user = await UsersCollection.findOne({
+    email: entries.email,
+    _id: entries.sub,
+  });
+
+  // якщо користувача немає (user === null) --> викидаємо помилку
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  // якщо користувача є (user !== null) --> хешируємо новий пароль (з payload.password - тобто з req.body)
+  const newHashedPassword = await bcrypt.hash(payload.password, 10);
+
+  // оновлюємо пароль користувача в базі
+  await UsersCollection.updateOne(
+    { _id: user._id },
+    { password: newHashedPassword },
+  );
 };

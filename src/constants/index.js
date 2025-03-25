@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 // ✅ Константи для визначення порядку сортування
 // "asc" - зростання, "desc" - спадання
 export const SORT_ORDER = {
@@ -21,3 +23,6 @@ export const SMTP = {
   SMTP_PASSWORD: 'SMTP_PASSWORD',
   SMTP_FROM: 'SMTP_FROM',
 };
+
+// ✅ Константа для визначення шляху до шаблонів листів
+export const TEMPLATES_DIR = path.join(process.cwd(), 'src', 'templates');

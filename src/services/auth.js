@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
-import { SMTP } from '../constants/index.js';
+import { SMTP, TEMPLATES_DIR } from '../constants/index.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
 import { sendEmail } from '../utils/sendMail.js';
+import handlebars from 'handlebars';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 
 import createHttpError from 'http-errors';
 import { randomBytes } from 'crypto';
@@ -175,7 +178,7 @@ export const requestResetToken = async (email) => {
   // робимо запит на знаходження користувача з відповідним email
   const user = await UsersCollection.findOne({ email: email });
 
-  // якщо користувача немає --> викидаємо помилку
+  // якщо користувача немає (user === null) --> викидаємо помилку
   if (!user) {
     throw createHttpError(404, 'User not found');
   }
@@ -183,19 +186,40 @@ export const requestResetToken = async (email) => {
   // створюємо токен для відновлення пароля
   // jwt.sign(payload, secretOrPrivateKey, [options, callback])
   // payload -> { sub: user._id, email: user.email }
-  // secret -> JWT_SECRET
-  // options (термін дії) -> { expiresIn: '15m' }
+  // secret -> JWT_SECRET (з .env через getEnvVar)
+  // options (термін дії) -> { expiresIn: '15m' } -> додає поле exp у payload
   const resetToken = jwt.sign(
     { sub: user._id, email: user.email },
     getEnvVar('JWT_SECRET'),
     { expiresIn: '15m' },
   );
 
+  // визначаємо шлях до шаблону reset-password-email.html
+  const resetPasswordTemplatePath = path.join(
+    TEMPLATES_DIR,
+    'reset-password-email.html',
+  );
+
+  // читаємо шаблон reset-password-email.html -> encoding: utf-8 - одразу повертаємо рядок у кодуванні UTF-8 (toString() не потрібен)
+  const templateSource = await fs.readFile(resetPasswordTemplatePath, {
+    encoding: 'utf-8',
+  });
+
+  // компілюємо шаблон з handlebars -> перетворюємо рядок HTML на функцію, яка може приймати дані (змінні name, link)
+  const template = handlebars.compile(templateSource);
+
+  // заповнюємо шаблон -> передаємо дані змінним name, link
+  // результат -> готовий HTML із заповненими {{name}} і {{link}}
+  const html = template({
+    name: user.name,
+    link: `${getEnvVar('APP_DOMAIN')}/reset-password?token=${resetToken}`,
+  });
+
   // надсилаємо лист з посиланням -> resetToken встановлено прямо в <a href>
   await sendEmail({
-    from: getEnvVar(SMTP.SMTP_FROM), // email відправника
-    to: email, // email отримувача
+    from: getEnvVar(SMTP.SMTP_FROM), // email відправника -> borismihajlovic856@gmail.com (з .env через getEnvVar)
+    to: email, // email отримувача (email користувача)
     subject: 'Reset your password', // тема листа
-    html: `<p>Click <a href="http://localhost:3000/reset-password?token=${resetToken}">here</a> to reset your password!</p>`, // текст листа з посиланням
+    html: html, // текст листа (з шаблону src/templates/reset-password-email.html)
   });
 };

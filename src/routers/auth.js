@@ -55,7 +55,7 @@ router.post('/refresh', ctrlWrapper(refreshUserSessionController));
 // ✅ Роут для запиту на надсилання листа на відновлення пароля
 // path: '/auth/request-reset-email' --> валідація тіла запиту (через схему requestResetEmailSchema) --> контролер запиту (requestResetEmailController)
 router.post(
-  '/request-reset-email',
+  '/send-reset-email',
   jsonParser,
   validateBody(requestResetEmailSchema),
   ctrlWrapper(requestResetEmailController),
@@ -64,7 +64,7 @@ router.post(
 // ✅ Роут для створення (відновлення) нового пароля - після запиту на надсилання листа на відновлення пароля
 // path: '/reset-password' --> валідація тіла запиту (через схему resetPasswordSchema) --> контролер відновлення пароля (resetPasswordController)
 router.post(
-  '/reset-password',
+  '/reset-pwd',
   jsonParser,
   validateBody(resetPasswordSchema),
   ctrlWrapper(resetPasswordController),

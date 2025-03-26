@@ -131,7 +131,7 @@ export const requestResetEmailController = async (req, res) => {
   // відповідь --> повертає статус 200, повідомлення і об'єкт 'data'
   res.status(200).json({
     status: 200,
-    message: 'Reset password email was successfully sent!',
+    message: 'Reset password email has been successfully sent!',
     data: {},
   });
 };
@@ -144,7 +144,7 @@ export const resetPasswordController = async (req, res) => {
   // відповідь --> повертає статус 200, повідомлення і об'єкт 'data'
   res.status(200).json({
     status: 200,
-    message: 'Password was successfully reset!',
+    message: 'Password has been successfully reset!',
     data: {},
   });
 };

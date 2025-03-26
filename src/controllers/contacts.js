@@ -58,25 +58,8 @@ export const getContactByIdController = async (req, res, next) => {
 };
 
 export const createNewContactController = async (req, res) => {
-  // ✅ Старий варіант валідації --> до підключення валідатора Joi
-  // if (!req.body.name || !req.body.phoneNumber || !req.body.contactType) {
-  //   const missingFields = [];
-
-  //   if (!req.body.name) {
-  //     missingFields.push('name');
-  //   }
-  //   if (!req.body.phoneNumber) {
-  //     missingFields.push('phoneNumber');
-  //   }
-  //   if (!req.body.contactType) {
-  //     missingFields.push('contactType');
-  //   }
-
-  //   throw createHttpError(
-  //     400,
-  //     `Missing required fields: ${missingFields.join(', ')}`,
-  //   );
-  // }
+  // eslint-disable-next-line no-unused-vars
+  const photo = req.file;
 
   const newContact = await createNewContact({
     ...req.body,
@@ -116,6 +99,9 @@ export const deleteContactController = async (req, res, next) => {
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
+  // eslint-disable-next-line no-unused-vars
+  const photo = req.file;
+
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
 
   const result = await patchUpdateContact(contactId, req.body, userId);
@@ -137,25 +123,10 @@ export const patchContactController = async (req, res, next) => {
 export const putContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
+  // eslint-disable-next-line no-unused-vars
+  const photo = req.file;
+
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
-
-  // ✅ Старий варіант валідації --> до підключення валідатора Joi
-  // const existingContact = await getContactById(contactId);
-
-  // if (!existingContact) {
-  //   if (!req.body.name || !req.body.phoneNumber || !req.body.contactType) {
-  //     const missingFields = [];
-
-  //     if (!req.body.name) missingFields.push('name');
-  //     if (!req.body.phoneNumber) missingFields.push('phoneNumber');
-  //     if (!req.body.contactType) missingFields.push('contactType');
-
-  //     throw createHttpError(
-  //       400,
-  //       `Missing required fields for upsert: ${missingFields.join(', ')}`,
-  //     );
-  //   }
-  // }
 
   const result = await putUpdateContact(contactId, req.body, userId, {
     upsert: true,

@@ -26,3 +26,9 @@ export const SMTP = {
 
 // ✅ Константа для визначення шляху до шаблонів листів
 export const TEMPLATES_DIR = path.join(process.cwd(), 'src', 'templates');
+
+// ✅ Константа для визначення шляху до тимчасової папки для файлів, які щойно завантажили
+export const TEMP_UPLOAD_DIR = path.join(process.cwd(), 'temp');
+
+// ✅ Константа для визначення шляху до постійної папки для зберігання файлів
+export const UPLOAD_DIR = path.join(process.cwd(), 'uploads');

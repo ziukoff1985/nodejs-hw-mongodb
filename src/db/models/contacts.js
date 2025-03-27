@@ -17,6 +17,10 @@ const contactsSchema = new Schema(
       ref: 'users',
       required: true,
     }, // Додаємо поле userId (посилання на idкористувача) -> зберігатиме посилання на документ у колекції users (id користувача)
+    photo: {
+      type: String,
+      default: null,
+    }, // Додаємо поле photo (посилання на фото контакту) -> URL зображення (наприклад, http://yourdomain/uploads/123_photo.jpg)
   },
   {
     timestamps: true,

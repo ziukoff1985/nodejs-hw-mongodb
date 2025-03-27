@@ -12,6 +12,7 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
 // ✅ Контроллер-обробник для отримання всіх контактів
 export const getAllContactsController = async (req, res) => {
@@ -58,25 +59,31 @@ export const getContactByIdController = async (req, res, next) => {
 };
 
 export const createNewContactController = async (req, res) => {
-  // eslint-disable-next-line no-unused-vars
-  const photo = req.file;
-
+  const photo = req.file; // отримуємо об'єкт файлу (зображення) -> 'multer' парсить запит 'multipart/form-data', знаходить поле photo і додає його дані в 'req.file'
   /* в 'photo' лежить обʼєкт файлу
 		{
 		  fieldname: 'photo',
 		  originalname: 'download.jpeg',
 		  encoding: '7bit',
 		  mimetype: 'image/jpeg',
-		  destination: '/Users/borysmeshkov/Projects/goit-study/students-app/temp',
+		  destination: '/home/node_js/nodejs-hw-mongodb/contact-app/temp',
 		  filename: '1710709919677_download.jpeg',
-		  path: '/Users/borysmeshkov/Projects/goit-study/students-app/temp/1710709919677_download.jpeg',
+		  path: '/home/node_js/nodejs-hw-mongodb/contact-app/temp/1710709919677_download.jpeg',
 		  size: 7
 	  }
 	*/
 
+  let photoUrl = null; // змінна для зберігання URL фото
+
+  // перевіряємо чи був завантажений файл -> якщо так -> saveFileToUploadDir(photo) — переміщує файл із 'temp' у 'uploads' і повертає URL
+  if (photo) {
+    photoUrl = await saveFileToUploadDir(photo);
+  }
+
   const newContact = await createNewContact({
     ...req.body,
-    userId: req.user._id, // Додаємо userId із req.user (посилання на id користувача), який створив контакт
+    userId: req.user._id, // Додаємо userId із req.user (посилання на id користувача), який створив контакт до req.body
+    photo: photoUrl, // Додаємо поле photo до req.body (посилання на фото контакту) -> URL зображення
   });
 
   res.status(201).json({
@@ -112,12 +119,21 @@ export const deleteContactController = async (req, res, next) => {
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  // eslint-disable-next-line no-unused-vars
   const photo = req.file;
+
+  let photoUrl = null;
+
+  if (photo) {
+    photoUrl = await saveFileToUploadDir(photo);
+  }
 
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
 
-  const result = await patchUpdateContact(contactId, req.body, userId);
+  const result = await patchUpdateContact(
+    contactId,
+    { ...req.body, photo: photoUrl },
+    userId,
+  );
 
   if (!result) {
     throw createHttpError(
@@ -136,14 +152,24 @@ export const patchContactController = async (req, res, next) => {
 export const putContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  // eslint-disable-next-line no-unused-vars
   const photo = req.file; // отримуємо об'єкт файлу (зображення) -> 'multer' парсить запит 'multipart/form-data', знаходить поле photo і додає його дані в 'req.file'
+
+  let photoUrl = null;
+
+  if (photo) {
+    photoUrl = await saveFileToUploadDir(photo);
+  }
 
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
 
-  const result = await putUpdateContact(contactId, req.body, userId, {
-    upsert: true,
-  });
+  const result = await putUpdateContact(
+    contactId,
+    { ...req.body, photo: photoUrl },
+    userId,
+    {
+      upsert: true,
+    },
+  );
 
   if (!result) {
     throw createHttpError(

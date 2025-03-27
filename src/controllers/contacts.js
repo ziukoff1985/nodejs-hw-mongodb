@@ -61,6 +61,19 @@ export const createNewContactController = async (req, res) => {
   // eslint-disable-next-line no-unused-vars
   const photo = req.file;
 
+  /* в 'photo' лежить обʼєкт файлу
+		{
+		  fieldname: 'photo',
+		  originalname: 'download.jpeg',
+		  encoding: '7bit',
+		  mimetype: 'image/jpeg',
+		  destination: '/Users/borysmeshkov/Projects/goit-study/students-app/temp',
+		  filename: '1710709919677_download.jpeg',
+		  path: '/Users/borysmeshkov/Projects/goit-study/students-app/temp/1710709919677_download.jpeg',
+		  size: 7
+	  }
+	*/
+
   const newContact = await createNewContact({
     ...req.body,
     userId: req.user._id, // Додаємо userId із req.user (посилання на id користувача), який створив контакт
@@ -124,7 +137,7 @@ export const putContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
   // eslint-disable-next-line no-unused-vars
-  const photo = req.file;
+  const photo = req.file; // отримуємо об'єкт файлу (зображення) -> 'multer' парсить запит 'multipart/form-data', знаходить поле photo і додає його дані в 'req.file'
 
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
 

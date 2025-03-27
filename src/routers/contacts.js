@@ -43,7 +43,7 @@ router.get('/', ctrlWrapper(getAllContactsController));
 router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
 router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
-// ✅ Важливо! ❗ Порядок middleware: jsonParser → validateBody → ctrlWrapper
+// ✅ Важливо! ❗ Порядок middleware: jsonParser → upload.single('photo') → validateBody → ctrlWrapper
 router.post(
   '/',
   jsonParser,
@@ -69,3 +69,9 @@ router.patch(
 );
 
 export default router;
+
+// upload.single('photo') — це middleware від multer, яке:
+// Розбирає запит multipart/form-data.
+// Шукає поле photo у тілі запиту.
+// Зберігає файл на диск (за налаштуваннями storage).
+// Додає об'єкт із даними файлу в req.file для подальшого використання в контролері.

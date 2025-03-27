@@ -13,6 +13,8 @@ import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 // ✅ Контроллер-обробник для отримання всіх контактів
 export const getAllContactsController = async (req, res) => {
@@ -75,9 +77,13 @@ export const createNewContactController = async (req, res) => {
 
   let photoUrl = null; // змінна для зберігання URL фото
 
-  // перевіряємо чи був завантажений файл -> якщо так -> saveFileToUploadDir(photo) — переміщує файл із 'temp' у 'uploads' і повертає URL
+  // перевіряємо чи був завантажений файл -> якщо так -> перевіряємо значення змінної 'ENABLE_CLOUDINARY' -> якщо 'true' -> викликаємо 'saveFileToCloudinary' (зберігаємо зображення в Cloudinary) -> якщо 'false' -> викликаємо 'saveFileToUploadDir' (зберігаємо зображення в локально в папці 'uploads')
   if (photo) {
-    photoUrl = await saveFileToUploadDir(photo);
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
   }
 
   const newContact = await createNewContact({
@@ -123,8 +129,13 @@ export const patchContactController = async (req, res, next) => {
 
   let photoUrl = null;
 
+  // перевіряємо чи був завантажений файл -> якщо так -> перевіряємо значення змінної 'ENABLE_CLOUDINARY' -> якщо 'true' -> викликаємо 'saveFileToCloudinary' (зберігаємо зображення в Cloudinary) -> якщо 'false' -> викликаємо 'saveFileToUploadDir' (зберігаємо зображення в локально в папці 'uploads')
   if (photo) {
-    photoUrl = await saveFileToUploadDir(photo);
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
   }
 
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
@@ -156,8 +167,13 @@ export const putContactController = async (req, res, next) => {
 
   let photoUrl = null;
 
+  // перевіряємо чи був завантажений файл -> якщо так -> перевіряємо значення змінної 'ENABLE_CLOUDINARY' -> якщо 'true' -> викликаємо 'saveFileToCloudinary' (зберігаємо зображення в Cloudinary) -> якщо 'false' -> викликаємо 'saveFileToUploadDir' (зберігаємо зображення в локально в папці 'uploads')
   if (photo) {
-    photoUrl = await saveFileToUploadDir(photo);
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
   }
 
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт

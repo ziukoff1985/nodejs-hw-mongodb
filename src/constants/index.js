@@ -32,3 +32,10 @@ export const TEMP_UPLOAD_DIR = path.join(process.cwd(), 'temp');
 
 // ✅ Константа для визначення шляху до постійної папки для зберігання файлів
 export const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
+
+// ✅ Константи для Cloudinary
+export const CLOUDINARY = {
+  CLOUD_NAME: 'CLOUDINARY_CLOUD_NAME', // унікальне ім'я аккаунту Cloudinary
+  API_KEY: 'CLOUDINARY_API_KEY',
+  API_SECRET: 'CLOUDINARY_API_SECRET',
+};

@@ -6,6 +6,8 @@ import { CLOUDINARY } from '../constants/index.js';
 
 // ✅ Налаштування Cloudinary
 // конфігурація виконується один раз при завантаженні модуля й застосовується до всіх викликів Cloudinary у проєкті
+// cloudinary.v2.config -> метод SDK
+// змінні оточення для конфігурації з файла .env
 cloudinary.v2.config({
   secure: true, // Усі URL будуть із https://
   cloud_name: getEnvVar(CLOUDINARY.CLOUD_NAME),

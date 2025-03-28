@@ -51,6 +51,8 @@ router.post(
   validateBody(createContactSchema),
   ctrlWrapper(createNewContactController),
 );
+
+// ✅ Важливо! ❗ Порядок middleware: jsonParser → isValidId → upload.single('photo') → validateBody → ctrlWrapper
 router.put(
   '/:contactId',
   jsonParser,
@@ -59,6 +61,8 @@ router.put(
   validateBody(createContactSchema),
   ctrlWrapper(putContactController),
 );
+
+// ✅ Важливо! ❗ Порядок middleware: jsonParser → isValidId → upload.single('photo') → validateBody → ctrlWrapper
 router.patch(
   '/:contactId',
   jsonParser,

@@ -14,14 +14,6 @@ import {
 export const registerUserController = async (req, res) => {
   const user = await registerUser(req.body);
 
-  // Варіант Видалення пароля з об'єкта користувача
-  // ✅ Актуальна реєстрації в моделі src/db/models/user.js
-  // ✅ const { password, ...userData } = user.toObject();
-
-  // user --> об'єкт, який повертає метод UsersCollection.create(payload) з сервісу src/services/auth.js
-  // У Mongoose --> це не звичайний JavaScript-об'єкт, а спеціальний об'єкт типу Document
-  // user.toObject() --> перетворює Mongoose-документ у звичайний JavaScript-об'єкт
-
   res.status(201).json({
     status: 201,
     message: 'Successfully registered a new user!',
@@ -36,26 +28,17 @@ export const loginUserController = async (req, res) => {
   const session = await loginUser(req.body);
 
   // ✅ Встановлюємо cookie --> для refreshToken
-  // httpOnly --> вказує, що cookie доступний тільки для HTTP-запитів
-  // expires --> вказує, скільки часу cookie буде діяти
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
-    // secure: true, // cookies надсилаються тільки через HTTPS
-    // sameSite: 'none', // дозволяє крос-доменні запити (якщо потрібен фронтенд на іншому домені)
   });
 
   // ✅ Встановлюємо cookie --> для sessionId
-  // ❗ додаємо toString() --> для явного перетворення session._id у рядок перед передачею в res.cookie()
-  // ❗ Це потрібно щоб sessionId в файлі cookie і _id в базі даних збігалися
   res.cookie('sessionId', session._id.toString(), {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
-    // secure: true,
-    // sameSite: 'none',
   });
 
-  // відповідь --> повертає статус 200, повідомлення і об'єкт з accessToken
   res.status(200).json({
     status: 200,
     message: 'Successfully logged in an user!',
@@ -72,14 +55,11 @@ export const logoutUserController = async (req, res) => {
 
   // Перевіряємо sessionId і refreshToken в cookies
   if (sessionId && refreshToken) {
-    // Асинхронний запит до колекції SessionsCollection для видалення попередньої сесії користувача з відповідним _id
     await logoutUser(sessionId, refreshToken);
   }
-  // Видаляємо sessionId і refreshToken з cookies
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
 
-  // відповідь --> повертає тількистатус 204 без повідомлення
   res.status(204).send();
 };
 
@@ -110,10 +90,8 @@ export const refreshUserSessionController = async (req, res) => {
   });
 
   // Встановлюємо нову сесію
-  // Приймаємо 'res' --> об'єкт відповіді і 'newSession' --> об'єкт, який повертає сервіс refreshUsersSession
   setupNewSession(res, newSession);
 
-  // відповідь --> повертає статус 200, повідомлення і об'єкт з accessToken
   res.json({
     status: 200,
     message: 'Successfully refreshed a session!',
@@ -125,10 +103,8 @@ export const refreshUserSessionController = async (req, res) => {
 
 // ✅ Контролер відновлення пароля (запит на відновлення пароля по пошті)
 export const requestResetEmailController = async (req, res) => {
-  // Асинхронний запит до сервісу requestResetToken
   await requestResetToken(req.body.email);
 
-  // відповідь --> повертає статус 200, повідомлення і об'єкт 'data'
   res.status(200).json({
     status: 200,
     message: 'Reset password email has been successfully sent!',
@@ -138,10 +114,8 @@ export const requestResetEmailController = async (req, res) => {
 
 // ✅ Контролер встановлення нового пароля (коли користувач перейшов за посиланням з листа на відновлення пароля)
 export const resetPasswordController = async (req, res) => {
-  // Асинхронний запит до сервісу resetPassword
   await resetPassword(req.body);
 
-  // відповідь --> повертає статус 200, повідомлення і об'єкт 'data'
   res.status(200).json({
     status: 200,
     message: 'Password has been successfully reset!',

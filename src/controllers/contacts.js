@@ -40,6 +40,7 @@ export const getAllContactsController = async (req, res) => {
   });
 };
 
+// ✅ Контроллер-обробник для отримання контакту за id
 export const getContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
@@ -60,20 +61,9 @@ export const getContactByIdController = async (req, res, next) => {
   });
 };
 
+// ✅ Контроллер-обробник для створення нового контакту
 export const createNewContactController = async (req, res) => {
   const photo = req.file; // отримуємо об'єкт файлу (зображення) -> 'multer' парсить запит 'multipart/form-data', знаходить поле photo і додає його дані в 'req.file'
-  /* в 'photo' лежить обʼєкт файлу
-		{
-		  fieldname: 'photo',
-		  originalname: 'download.jpeg',
-		  encoding: '7bit',
-		  mimetype: 'image/jpeg',
-		  destination: '/home/node_js/nodejs-hw-mongodb/contact-app/temp',
-		  filename: '1710709919677_download.jpeg',
-		  path: '/home/node_js/nodejs-hw-mongodb/contact-app/temp/1710709919677_download.jpeg',
-		  size: 7
-	  }
-	*/
 
   let photoUrl = null; // змінна для зберігання URL фото
 
@@ -99,6 +89,7 @@ export const createNewContactController = async (req, res) => {
   });
 };
 
+// ✅ Контроллер-обробник для видалення контакту
 export const deleteContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
@@ -113,19 +104,14 @@ export const deleteContactController = async (req, res, next) => {
     );
   }
 
-  // ✅ Альтернативний варіант обробки помилки
-  // if (!deletedContact) {
-  //   next(createHttpError(404, 'Contact not found'));
-  //   return;
-  // }
-
   res.status(204).send();
 };
 
+// ✅ Контроллер-обробник для оновлення контакту
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  const photo = req.file;
+  const photo = req.file; // отримуємо об'єкт файлу (зображення) -> 'multer' парсить запит 'multipart/form-data', знаходить поле photo і додає його дані в 'req.file'
 
   let photoUrl = null;
 
@@ -160,6 +146,7 @@ export const patchContactController = async (req, res, next) => {
   });
 };
 
+// ✅ Контроллер-обробник для оновлення контакту
 export const putContactController = async (req, res, next) => {
   const { contactId } = req.params;
 

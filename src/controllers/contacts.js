@@ -111,7 +111,7 @@ export const deleteContactController = async (req, res, next) => {
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  const photo = req.file; // отримуємо об'єкт файлу (зображення) -> 'multer' парсить запит 'multipart/form-data', знаходить поле photo і додає його дані в 'req.file'
+  const photo = req.file; // отримуємо об'єкт файлу (зображення) -> 'multer' парсить запит 'multipart/form-data', знаходить поле photo і додає його дані в 'req.file' -> якщо photo не завантажено -> 'req.file' буде 'undefined'
 
   let photoUrl = null;
 
@@ -126,11 +126,16 @@ export const patchContactController = async (req, res, next) => {
 
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
 
-  const result = await patchUpdateContact(
-    contactId,
-    { ...req.body, photo: photoUrl },
-    userId,
-  );
+  // Формуємо об'єкт оновлення контакту (з req.body) !!!БЕЗ photo за замовчуванням
+  const patchedData = { ...req.body };
+
+  // якщо фото було завантажено (photoUrl це URL) -> додаємо властивість photo і присвоюємо URL фото до об'єкта оновлення контакту (щоб не було в БД 'photo: null' -> якщо фото не було завантажено то поле photo не додається)
+  if (photoUrl) {
+    patchedData.photo = photoUrl;
+  }
+
+  // Оновлюємо контакт -> з patchedData
+  const result = await patchUpdateContact(contactId, patchedData, userId);
 
   if (!result) {
     throw createHttpError(
@@ -165,14 +170,17 @@ export const putContactController = async (req, res, next) => {
 
   const userId = req.user._id; // Додаємо userId із req.user (посилання на id користувача), який створив контакт
 
-  const result = await putUpdateContact(
-    contactId,
-    { ...req.body, photo: photoUrl },
-    userId,
-    {
-      upsert: true,
-    },
-  );
+  // Формуємо об'єкт оновлення контакту (з req.body) !!!БЕЗ photo за замовчуванням
+  const putedData = { ...req.body };
+
+  // якщо фото було завантажено (photoUrl це URL) -> додаємо властивість photo і присвоюємо URL фото до об'єкта оновлення контакту (щоб не було в БД 'photo: null' -> якщо фото не було завантажено то поле photo не додається)
+  if (photoUrl) {
+    putedData.photo = photoUrl;
+  }
+
+  const result = await putUpdateContact(contactId, putedData, userId, {
+    upsert: true,
+  });
 
   if (!result) {
     throw createHttpError(

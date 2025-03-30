@@ -1,4 +1,4 @@
-// ✅ Middleware для валідації тіла запиту за допомогою схеми Joi
+// ✅ Middleware для валідації тіла запиту (req.body) за допомогою схеми Joi
 import createHttpError from 'http-errors';
 
 export const validateBody = (schema) => {

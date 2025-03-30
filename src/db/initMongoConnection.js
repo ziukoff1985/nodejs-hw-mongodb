@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import { getEnvVar } from '../utils/getEnvVar.js';
 
+// ✅ Функція для ініціалізації з'єднання з базою даних
 export const initMongoConnection = async () => {
   try {
     const user = getEnvVar('MONGODB_USER');

@@ -1,5 +1,6 @@
 import { THIRTY_DAYS } from '../constants/index.js';
 import {
+  loginOrSignupWithGoogle,
   loginUser,
   logoutUser,
   refreshUsersSession,
@@ -124,7 +125,7 @@ export const resetPasswordController = async (req, res) => {
   });
 };
 
-// ✅ Контролер для отримання URL-адреси Google OAuth. Викликає generateAuthUrl і повертає JSON із URL для фронтенду
+// ✅ Контролер входу користувача через Google аккаунт -> для отримання URL-адреси Google OAuth (в url - client_id, redirect_uri, scope, response_type). Викликає generateAuthUrl і повертає JSON із URL для фронтенду
 export const getGoogleOAuthUrlController = async (req, res) => {
   const url = generateGoogleOAuthUrl();
 
@@ -133,6 +134,24 @@ export const getGoogleOAuthUrlController = async (req, res) => {
     message: 'Successfully get Google OAuth url!',
     data: {
       url: url,
+    },
+  });
+};
+
+// ✅ Контролер входу користувача через Google аккаунт
+// Приймає: req.body.code — авторизаційний код із фронтенду (POST /confirm-oauth)
+// Повертає: accessToken і встановлює cookies через setupNewSession
+export const loginWithGoogleController = async (req, res) => {
+  const session = await loginOrSignupWithGoogle(req.body.code);
+
+  // Встановлюємо нову сесію -> відправляємо cookie
+  setupNewSession(res, session);
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully logged in via Google OAuth!',
+    data: {
+      accessToken: session.accessToken,
     },
   });
 };

@@ -49,3 +49,11 @@ export const resetPasswordSchema = Joi.object({
     'any.required': 'Token is required',
   }),
 });
+
+// ✅ Валідатор для логіну користувача через Google OAuth
+// приймає авторизаційний код (code) у req.body при POST-запиті на роут /confirm-oauth -> до цього приймається фронтендом із query-параметра redirect_uri на http://localhost:3000/confirm-google-auth
+export const loginWithGoogleOAuthSchema = Joi.object({
+  code: Joi.string().required().messages({
+    'any.required': 'Code is required',
+  }),
+}).unknown(false); // забороняємо невідомі поля

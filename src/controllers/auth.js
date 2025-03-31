@@ -7,6 +7,7 @@ import {
   requestResetToken,
   resetPassword,
 } from '../services/auth.js';
+import { generateGoogleOAuthUrl } from '../utils/googleOAuth2.js';
 
 // ✅ Контролер для реєстрації користувача
 // Викликає асинхронну функцію-сервіс registerUser --> передає req.body
@@ -120,5 +121,18 @@ export const resetPasswordController = async (req, res) => {
     status: 200,
     message: 'Password has been successfully reset!',
     data: {},
+  });
+};
+
+// ✅ Контролер для отримання URL-адреси Google OAuth. Викликає generateAuthUrl і повертає JSON із URL для фронтенду
+export const getGoogleOAuthUrlController = async (req, res) => {
+  const url = generateGoogleOAuthUrl();
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully get Google OAuth url!',
+    data: {
+      url: url,
+    },
   });
 };

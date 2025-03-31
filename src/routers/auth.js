@@ -7,6 +7,7 @@ import {
   resetPasswordSchema,
 } from '../validation/auth.js';
 import {
+  getGoogleOAuthUrlController,
   loginUserController,
   logoutUserController,
   refreshUserSessionController,
@@ -69,5 +70,8 @@ router.post(
   validateBody(resetPasswordSchema),
   ctrlWrapper(resetPasswordController),
 );
+
+// ✅ Роут для отримання URL-адреси Google OAuth -> контролер (getGoogleOAuthUrlController) повертає URL
+router.get('/get-oauth-url', ctrlWrapper(getGoogleOAuthUrlController));
 
 export default router;

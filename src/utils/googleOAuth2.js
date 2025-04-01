@@ -45,16 +45,21 @@ export const generateGoogleOAuthUrl = () => {
 // розшифровує id_token -> через googleOAuthClient.verifyIdToken
 // повертає об'єкт ticket (об'єкт типу LoginTicket від google-auth-library)
 export const validateCode = async (code) => {
-  const response = await googleOAuthClient.getToken(code);
-  if (!response.tokens.id_token) {
-    throw createHttpError(401, 'Unauthorized');
+  try {
+    // try-catch -> щоб не було 500 помилки при невалідному code
+    const response = await googleOAuthClient.getToken(code);
+    if (!response.tokens.id_token) {
+      throw createHttpError(401, 'Unauthorized');
+    }
+
+    const ticket = await googleOAuthClient.verifyIdToken({
+      idToken: response.tokens.id_token,
+    });
+
+    return ticket;
+  } catch {
+    throw createHttpError(401, 'Invalid or expired authorization code');
   }
-
-  const ticket = await googleOAuthClient.verifyIdToken({
-    idToken: response.tokens.id_token,
-  });
-
-  return ticket;
 };
 
 // ✅ Функція для отримання імені користувача з об'єкта payload -> отримує повне ім'я користувача з payload

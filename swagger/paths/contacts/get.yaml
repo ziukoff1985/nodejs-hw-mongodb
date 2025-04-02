@@ -1,0 +1,93 @@
+tags:
+  - Contacts
+summary: Get all contacts
+operationId: getAllContacts
+description: Get a page-by-page paginated list of contacts with filtering and sorting options
+security:
+  - bearerAuth: []
+parameters:
+  - in: query
+    name: page
+    schema:
+      type: integer
+      default: 1
+    description: Page number for pagination
+  - in: query
+    name: perPage
+    schema:
+      type: integer
+      default: 10
+    description: Number of contacts per page
+  - in: query
+    name: sortBy
+    schema:
+      type: string
+      enum:
+        [
+          name,
+          phoneNumber,
+          email,
+          isFavourite,
+          contactType,
+          createdAt,
+          updatedAt,
+        ]
+      default: name
+    description: Field to sort by
+  - in: query
+    name: sortOrder
+    schema:
+      type: integer
+      enum: [1, -1]
+      default: 1
+    description: Sort order (1 for ascending, -1 for descending)
+  - in: query
+    name: contactType
+    schema:
+      type: string
+      enum: [work, home, personal]
+    description: Filter by contact type
+  - in: query
+    name: isFavourite
+    schema:
+      type: boolean
+    description: Filter by favourite status
+responses:
+  '200':
+    description: Successfully received contacts
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully found contacts! Page 1 of 5, shown 10 pcs of 50 contacts
+            data:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: ../../components/schemas/contact.yaml
+                totalItems:
+                  type: integer
+                  example: 50
+                totalPages:
+                  type: integer
+                  example: 5
+                page:
+                  type: integer
+                  example: 1
+                perPage:
+                  type: integer
+                  example: 10
+  '401':
+    $ref: '../../components/responses/401.yaml'

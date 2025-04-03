@@ -1,0 +1,17 @@
+tags:
+  - Auth
+summary: Logout a user
+operationId: logoutUser
+description: Logout a user by clearing session cookies
+responses:
+  '204':
+    description: User logged out successfully
+    headers:
+      Set-Cookie:
+        schema:
+          type: string
+          example: 'refreshToken=; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT; sessionId=; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
+  '400':
+    $ref: ../../components/responses/400.yaml
+  '401':
+    $ref: ../../components/responses/401.yaml

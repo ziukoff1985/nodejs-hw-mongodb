@@ -1,0 +1,49 @@
+tags:
+  - Auth
+summary: Reset user password
+operationId: resetUserPassword
+description: Reset user password using a token from the reset email
+security: []
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - password
+          - token
+        properties:
+          password:
+            type: string
+            example: 'newPassword123'
+          token:
+            type: string
+            example: 'jwtResetToken123'
+responses:
+  '200':
+    description: Password reset successful
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: 'Password has been successfully reset!'
+            data:
+              type: object
+              example: {}
+  '400':
+    $ref: ../../components/responses/400.yaml
+  '401':
+    $ref: ../../components/responses/401.yaml
+  '404':
+    $ref: ../../components/responses/404.yaml

@@ -1,0 +1,55 @@
+tags:
+  - Auth
+summary: Login a user
+operationId: loginUser
+description: Login a user with email and password, sets refreshToken and sessionId cookies
+security: []
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            example: 'John_Doe@example.com'
+          password:
+            type: string
+            example: 'password123'
+responses:
+  '200':
+    description: User logged in successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: 'Successfully logged in an user!'
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  example: 'randomAccessToken123'
+    headers:
+      Set-Cookie:
+        schema:
+          type: string
+          example: 'refreshToken=randomRefreshToken123; HttpOnly; Expires=Wed, 02 May 2025 00:00:00 GMT; sessionId=randomSessionId123; HttpOnly; Expires=Wed, 02 May 2025 00:00:00 GMT'
+  '400':
+    $ref: ../../components/responses/400.yaml
+  '401':
+    $ref: ../../components/responses/401.yaml

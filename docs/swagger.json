@@ -336,9 +336,9 @@
         "tags": [
           "Contacts"
         ],
-        "summary": "Replace contact by ID",
-        "operationId": "replaceContactById",
-        "description": "Fully replace an existing contact by its unique identifier (ID), optionally uploading a new photo",
+        "summary": "Replace or create contact by ID",
+        "operationId": "replaceOrCreateContactById",
+        "description": "Replace an existing contact by its unique identifier (ID) or create a new one if it does not exist, optionally uploading a new photo",
         "security": [
           {
             "bearerAuth": []
@@ -405,7 +405,7 @@
         },
         "responses": {
           "200": {
-            "description": "Contact updated successfully",
+            "description": "Contact replaced successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -422,7 +422,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully upserted a contact!"
+                      "example": "Successfully replaced a contact!"
                     },
                     "data": {
                       "$ref": "#/components/schemas/contact"
@@ -433,7 +433,7 @@
             }
           },
           "201": {
-            "description": "Contact created successfully (if not found)",
+            "description": "Contact created successfully because it did not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -450,7 +450,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully upserted a contact!"
+                      "example": "Successfully created a new contact!"
                     },
                     "data": {
                       "$ref": "#/components/schemas/contact"
@@ -921,6 +921,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
                   "properties": {
                     "status": {
                       "type": "integer",
@@ -1069,6 +1074,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -1236,7 +1244,9 @@
         "required": [
           "_id",
           "name",
-          "email"
+          "email",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
           "_id": {
@@ -1253,6 +1263,18 @@
             "description": "User's email address",
             "type": "string",
             "example": "John_Doe@example.com"
+          },
+          "createdAt": {
+            "description": "The timestamp when the user was created",
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-03-05T12:00:00Z"
+          },
+          "updatedAt": {
+            "description": "The timestamp when the user was last updated",
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-03-05T12:05:00Z"
           }
         }
       }
@@ -1442,7 +1464,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Failed to send the email, please try again later"
+                      "example": "An unexpected error occurred on the server, please try again later"
                     }
                   }
                 }

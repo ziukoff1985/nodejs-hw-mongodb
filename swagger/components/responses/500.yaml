@@ -21,4 +21,6 @@ content:
           properties:
             message:
               type: string
-              example: 'An unexpected error occurred on the server, please try again later'
+              example: An unexpected error occurred on the server, please try again later
+              enum:
+                - An unexpected error occurred on the server, please try again later

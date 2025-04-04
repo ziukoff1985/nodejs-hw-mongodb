@@ -22,3 +22,6 @@ content:
             message:
               type: string
               example: 'Contact not found or you do not have permission'
+              enum:
+                - 'Contact not found or you do not have permission'
+                - 'User not found'

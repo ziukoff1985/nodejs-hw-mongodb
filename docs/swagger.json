@@ -11,10 +11,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "http://127.0.0.1:3000"
     },
     {
-      "url": "https://example.com/api/v1"
+      "url": "https://contacts-app-kiv5.onrender.com"
     }
   ],
   "security": [
@@ -54,7 +54,8 @@
               "type": "integer",
               "default": 1
             },
-            "description": "Page number for pagination"
+            "description": "Page number for pagination",
+            "example": 1
           },
           {
             "in": "query",
@@ -63,7 +64,8 @@
               "type": "integer",
               "default": 10
             },
-            "description": "Number of contacts per page"
+            "description": "Number of contacts per page",
+            "example": 10
           },
           {
             "in": "query",
@@ -81,7 +83,8 @@
               ],
               "default": "name"
             },
-            "description": "Field to sort by"
+            "description": "Field to sort by",
+            "example": "name"
           },
           {
             "in": "query",
@@ -94,7 +97,8 @@
               ],
               "default": 1
             },
-            "description": "Sort order (1 for ascending, -1 for descending)"
+            "description": "Sort order (1 for ascending, -1 for descending)",
+            "example": 1
           },
           {
             "in": "query",
@@ -107,7 +111,8 @@
                 "personal"
               ]
             },
-            "description": "Filter by contact type"
+            "description": "Filter by contact type",
+            "example": "work"
           },
           {
             "in": "query",
@@ -115,7 +120,8 @@
             "schema": {
               "type": "boolean"
             },
-            "description": "Filter by favourite status"
+            "description": "Filter by favourite status",
+            "example": true
           }
         ],
         "responses": {
@@ -141,12 +147,29 @@
                     },
                     "data": {
                       "type": "object",
+                      "required": [
+                        "data",
+                        "page",
+                        "perPage",
+                        "totalItems",
+                        "totalPages",
+                        "hasNextPage",
+                        "hasPreviousPage"
+                      ],
                       "properties": {
                         "data": {
                           "type": "array",
                           "items": {
                             "$ref": "#/components/schemas/contact"
                           }
+                        },
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "perPage": {
+                          "type": "integer",
+                          "example": 10
                         },
                         "totalItems": {
                           "type": "integer",
@@ -156,13 +179,13 @@
                           "type": "integer",
                           "example": 5
                         },
-                        "page": {
-                          "type": "integer",
-                          "example": 1
+                        "hasNextPage": {
+                          "type": "boolean",
+                          "example": true
                         },
-                        "perPage": {
-                          "type": "integer",
-                          "example": 10
+                        "hasPreviousPage": {
+                          "type": "boolean",
+                          "example": false
                         }
                       }
                     }
@@ -171,8 +194,106 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: page and perPage must be positive integers"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid query parameters",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: page and perPage must be positive integers"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Access token is expired, invalid or not provided"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Access token is expired, invalid or missing",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Access token is expired, invalid or not provided"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -264,8 +385,106 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: phoneNumber must be a valid phone number (e.g., +380501234567)"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid request data",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: phoneNumber must be a valid phone number (e.g., +380501234567)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Access token is expired, invalid or not provided"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Access token is expired, invalid or missing",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Access token is expired, invalid or not provided"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -324,11 +543,155 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: contactId must be a valid ObjectId"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid contact ID",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: contactId must be a valid ObjectId"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Access token is expired, invalid or not provided"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Access token is expired, invalid or missing",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Access token is expired, invalid or not provided"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "$ref": "#/components/responses/404"
+            "description": "Not found error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Contact not found or you do not have permission"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Contact not found",
+                    "value": {
+                      "status": 404,
+                      "message": "NotFoundError",
+                      "data": {
+                        "message": "Contact not found or you do not have permission"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -460,11 +823,155 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: contactId must be a valid ObjectId"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid request data",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: contactId must be a valid ObjectId"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Access token is expired, invalid or not provided"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Access token expired",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Access token is expired, invalid or not provided"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "$ref": "#/components/responses/404"
+            "description": "Not found error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Contact not found or you do not have permission"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Contact not found",
+                    "value": {
+                      "status": 404,
+                      "message": "NotFoundError",
+                      "data": {
+                        "message": "Contact not found or you do not have permission"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -595,11 +1102,155 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: contactId must be a valid ObjectId"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid request data",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: contactId must be a valid ObjectId"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Access token is expired, invalid or not provided"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Access token expired",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Access token is expired, invalid or not provided"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "$ref": "#/components/responses/404"
+            "description": "Not found error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Contact not found or you do not have permission"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Contact not found",
+                    "value": {
+                      "status": 404,
+                      "message": "NotFoundError",
+                      "data": {
+                        "message": "Contact not found or you do not have permission"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -630,11 +1281,155 @@
           "204": {
             "description": "Contact deleted successfully"
           },
+          "400": {
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: contactId must be a valid ObjectId"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid contact ID",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: contactId must be a valid ObjectId"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Access token is expired, invalid or not provided"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Access token expired",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Access token is expired, invalid or not provided"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "$ref": "#/components/responses/404"
+            "description": "Not found error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Contact not found or you do not have permission"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Contact not found",
+                    "value": {
+                      "status": 404,
+                      "message": "NotFoundError",
+                      "data": {
+                        "message": "Contact not found or you do not have permission"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -707,10 +1502,59 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/400"
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: email must be a valid email address, password must be at least 8 characters long, name must be at least 3 characters long"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid request data",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: email must be a valid email address, password must be at least 8 characters long, name must be at least 3 characters long"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "409": {
             "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -792,10 +1636,105 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/400"
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: email and password are required"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid request data",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: email and password are required"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Email or password is wrong"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Invalid credentials",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Email or password is wrong"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -821,10 +1760,105 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/400"
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid session ID"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid session ID",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid session ID"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Session not found or invalid token"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Invalid session",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Session not found or invalid token"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -881,7 +1915,56 @@
             }
           },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Session not found or invalid token"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Invalid session",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Session not found or invalid token"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -937,7 +2020,8 @@
                     },
                     "data": {
                       "type": "object",
-                      "example": {}
+                      "example": {},
+                      "description": "Empty object as no additional data is returned"
                     }
                   }
                 }
@@ -945,10 +2029,102 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/400"
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: email is required and must be a valid email address"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid request data",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: email is required and must be a valid email address"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "$ref": "#/components/responses/404"
+            "description": "Not found error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "User not found"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "User not found",
+                    "value": {
+                      "status": 404,
+                      "message": "NotFoundError",
+                      "data": {
+                        "message": "User not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -1012,7 +2188,8 @@
                     },
                     "data": {
                       "type": "object",
-                      "example": {}
+                      "example": {},
+                      "description": "Empty object as no additional data is returned"
                     }
                   }
                 }
@@ -1020,13 +2197,154 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/400"
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: password and token are required"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid request data",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: password and token are required"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Token is expired, invalid or not provided"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Invalid token",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "Token is expired, invalid or not provided"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "$ref": "#/components/responses/404"
+            "description": "Not found error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "User not found"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "User not found",
+                    "value": {
+                      "status": 404,
+                      "message": "NotFoundError",
+                      "data": {
+                        "message": "User not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -1153,10 +2471,105 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/400"
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request data: code is required"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "summary": "Invalid request data",
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "message": "Invalid request data: code is required"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "$ref": "#/components/responses/401"
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "UnauthorizedError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "No payload received"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "No payload received",
+                    "value": {
+                      "status": 401,
+                      "message": "UnauthorizedError",
+                      "data": {
+                        "message": "No payload received"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -1177,7 +2590,9 @@
           "name",
           "phoneNumber",
           "contactType",
-          "userId"
+          "userId",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
           "_id": {
@@ -1280,125 +2695,6 @@
       }
     },
     "responses": {
-      "400": {
-        "description": "Bad request error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 400
-                },
-                "message": {
-                  "type": "string",
-                  "example": "BadRequestError"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Validation error"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "401": {
-        "description": "Unauthorized error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 401
-                },
-                "message": {
-                  "type": "string",
-                  "example": "UnauthorizedError"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Access token expired",
-                      "enum": [
-                        "Access token expired",
-                        "Email or password is wrong",
-                        "Session not found or invalid token",
-                        "Session token is expired",
-                        "Token is expired or invalid",
-                        "No payload received"
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "404": {
-        "description": "Not found error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 404
-                },
-                "message": {
-                  "type": "string",
-                  "example": "NotFoundError"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Contact not found or you do not have permission"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "409": {
         "description": "Conflict error",
         "content": {
@@ -1427,7 +2723,10 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "This email is already in use"
+                      "example": "This email is already in use",
+                      "enum": [
+                        "This email is already in use"
+                      ]
                     }
                   }
                 }
@@ -1464,7 +2763,10 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An unexpected error occurred on the server, please try again later"
+                      "example": "An unexpected error occurred on the server, please try again later",
+                      "enum": [
+                        "An unexpected error occurred on the server, please try again later"
+                      ]
                     }
                   }
                 }

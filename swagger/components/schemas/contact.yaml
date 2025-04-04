@@ -5,6 +5,8 @@ required:
   - phoneNumber
   - contactType
   - userId
+  - createdAt
+  - updatedAt
 properties:
   _id:
     description: Contact's unique identifier (ID)

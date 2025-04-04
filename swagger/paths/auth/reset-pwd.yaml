@@ -41,9 +41,105 @@ responses:
             data:
               type: object
               example: {}
+              description: Empty object as no additional data is returned
   '400':
-    $ref: ../../components/responses/400.yaml
+    description: Bad request error
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: BadRequestError
+            data:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  example: 'Invalid request data: password and token are required'
+        examples:
+          badRequest:
+            summary: Invalid request data
+            value:
+              status: 400
+              message: BadRequestError
+              data:
+                message: 'Invalid request data: password and token are required'
   '401':
-    $ref: ../../components/responses/401.yaml
+    description: Unauthorized error
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 401
+            message:
+              type: string
+              example: UnauthorizedError
+            data:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  example: 'Token is expired, invalid or not provided'
+        examples:
+          unauthorized:
+            summary: Invalid token
+            value:
+              status: 401
+              message: UnauthorizedError
+              data:
+                message: 'Token is expired, invalid or not provided'
   '404':
-    $ref: ../../components/responses/404.yaml
+    description: Not found error
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: NotFoundError
+            data:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  example: 'User not found'
+        examples:
+          notFound:
+            summary: User not found
+            value:
+              status: 404
+              message: NotFoundError
+              data:
+                message: 'User not found'
+  '500':
+    $ref: ../../components/responses/500.yaml

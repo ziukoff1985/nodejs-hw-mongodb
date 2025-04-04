@@ -22,3 +22,5 @@ content:
             message:
               type: string
               example: 'This email is already in use'
+              enum:
+                - 'This email is already in use'

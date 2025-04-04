@@ -21,4 +21,15 @@ content:
           properties:
             message:
               type: string
-              example: 'Validation error'
+              example: 'Invalid request data: email must be a valid email address, password must be at least 8 characters long, name must be at least 3 characters long'
+              enum:
+                - 'Invalid request data: email must be a valid email address, password must be at least 8 characters long, name must be at least 3 characters long'
+                - 'Invalid request data: contactId must be a valid ObjectId'
+                - 'Invalid request data: phoneNumber must be a valid phone number (e.g., +380501234567)'
+                - 'Invalid request data: page and perPage must be positive integers'
+                - 'Invalid request data: email and password are required'
+                - 'Invalid session ID'
+                - 'Missing or invalid refreshToken or sessionId in cookies'
+                - 'Invalid request data: email is required and must be a valid email address'
+                - 'Invalid request data: password and token are required'
+                - 'Invalid request data: code is required'

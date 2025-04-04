@@ -1,6 +1,6 @@
 tags:
   - Auth
-summary: Login register with Google OAuth
+summary: Login or register with Google OAuth
 operationId: loginOrRegisterWithGoogle
 description: Login or register a user using Google OAuth code, sets refreshToken and sessionId cookies
 security: []

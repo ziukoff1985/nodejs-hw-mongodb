@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:3000"
+      "url": "http://localhost:3000"
     },
     {
       "url": "https://contacts-app-kiv5.onrender.com"
@@ -2404,7 +2404,7 @@
         "tags": [
           "Auth"
         ],
-        "summary": "Login register with Google OAuth",
+        "summary": "Login or register with Google OAuth",
         "operationId": "loginOrRegisterWithGoogle",
         "description": "Login or register a user using Google OAuth code, sets refreshToken and sessionId cookies",
         "security": [],

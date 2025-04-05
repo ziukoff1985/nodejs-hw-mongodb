@@ -16,7 +16,7 @@ const contactsSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'users',
       required: true,
-    }, // Додаємо поле userId (посилання на idкористувача) -> зберігатиме посилання на документ у колекції users (id користувача)
+    }, // Додаємо поле userId (посилання на id користувача) -> зберігатиме посилання на документ у колекції users (id користувача)
     photo: {
       type: String,
       default: null,

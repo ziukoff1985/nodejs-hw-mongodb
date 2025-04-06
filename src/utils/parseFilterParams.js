@@ -23,9 +23,9 @@ const parseBoolean = (value) => {
 
 // ✅ Функція-парсер параметрів фільтрації з запиту клієнта (req_query)
 export const parseFilterParams = (req_query) => {
-  const { type, isFavourite } = req_query;
+  const { contactType, isFavourite } = req_query;
 
-  const parsedContactType = parseContactType(type);
+  const parsedContactType = parseContactType(contactType);
   const parsedIsFavourite = parseBoolean(isFavourite);
 
   return {

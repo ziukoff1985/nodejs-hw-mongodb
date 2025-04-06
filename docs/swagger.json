@@ -90,15 +90,15 @@
             "in": "query",
             "name": "sortOrder",
             "schema": {
-              "type": "integer",
+              "type": "string",
               "enum": [
-                1,
-                -1
+                "asc",
+                "desc"
               ],
-              "default": 1
+              "default": "asc"
             },
-            "description": "Sort order (1 for ascending, -1 for descending)",
-            "example": 1
+            "description": "Sort order (\"asc\" for ascending, \"desc\" for descending)",
+            "example": "asc"
           },
           {
             "in": "query",
@@ -111,7 +111,8 @@
                 "personal"
               ]
             },
-            "description": "Filter by contact type",
+            "required": false,
+            "description": "Filter by contact type (optional)",
             "example": "work"
           },
           {
@@ -120,7 +121,8 @@
             "schema": {
               "type": "boolean"
             },
-            "description": "Filter by favourite status",
+            "required": false,
+            "description": "Filter by favourite status (optional)",
             "example": true
           }
         ],

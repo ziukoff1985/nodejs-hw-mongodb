@@ -52,14 +52,12 @@ parameters:
       enum: [work, home, personal]
     required: false
     description: Filter by contact type (optional)
-    example: work
   - in: query
     name: isFavourite
     schema:
       type: boolean
     required: false
     description: Filter by favourite status (optional)
-    example: true
 responses:
   '200':
     description: Successfully received contacts

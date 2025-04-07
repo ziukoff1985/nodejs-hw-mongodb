@@ -112,8 +112,7 @@
               ]
             },
             "required": false,
-            "description": "Filter by contact type (optional)",
-            "example": "work"
+            "description": "Filter by contact type (optional)"
           },
           {
             "in": "query",
@@ -122,8 +121,7 @@
               "type": "boolean"
             },
             "required": false,
-            "description": "Filter by favourite status (optional)",
-            "example": true
+            "description": "Filter by favourite status (optional)"
           }
         ],
         "responses": {

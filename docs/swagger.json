@@ -116,7 +116,11 @@
             "in": "query",
             "name": "isFavourite",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "enum": [
+                true,
+                false
+              ]
             },
             "required": false,
             "description": "Filter by favourite status (optional)"

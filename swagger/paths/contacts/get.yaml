@@ -36,7 +36,6 @@ parameters:
         ]
       default: name
     description: Field to sort by
-    example: 'name'
   - in: query
     name: sortOrder
     schema:
@@ -44,7 +43,6 @@ parameters:
       enum: [asc, desc]
       default: asc
     description: Sort order ("asc" for ascending, "desc" for descending)
-    example: asc
   - in: query
     name: contactType
     schema:

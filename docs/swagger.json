@@ -83,22 +83,20 @@
               ],
               "default": "name"
             },
-            "description": "Field to sort by",
-            "example": "name"
+            "description": "Field to sort by"
           },
           {
             "in": "query",
             "name": "sortOrder",
             "schema": {
-              "type": "integer",
+              "type": "string",
               "enum": [
-                1,
-                -1
+                "asc",
+                "desc"
               ],
-              "default": 1
+              "default": "asc"
             },
-            "description": "Sort order (1 for ascending, -1 for descending)",
-            "example": 1
+            "description": "Sort order (\"asc\" for ascending, \"desc\" for descending)"
           },
           {
             "in": "query",
@@ -111,17 +109,21 @@
                 "personal"
               ]
             },
-            "description": "Filter by contact type",
-            "example": "work"
+            "required": false,
+            "description": "Filter by contact type (optional)"
           },
           {
             "in": "query",
             "name": "isFavourite",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "enum": [
+                true,
+                false
+              ]
             },
-            "description": "Filter by favourite status",
-            "example": true
+            "required": false,
+            "description": "Filter by favourite status (optional)"
           }
         ],
         "responses": {

@@ -36,28 +36,27 @@ parameters:
         ]
       default: name
     description: Field to sort by
-    example: 'name'
   - in: query
     name: sortOrder
     schema:
-      type: integer
-      enum: [1, -1]
-      default: 1
-    description: Sort order (1 for ascending, -1 for descending)
-    example: 1
+      type: string
+      enum: [asc, desc]
+      default: asc
+    description: Sort order ("asc" for ascending, "desc" for descending)
   - in: query
     name: contactType
     schema:
       type: string
       enum: [work, home, personal]
-    description: Filter by contact type
-    example: work
+    required: false
+    description: Filter by contact type (optional)
   - in: query
     name: isFavourite
     schema:
       type: boolean
-    description: Filter by favourite status
-    example: true
+      enum: [true, false]
+    required: false
+    description: Filter by favourite status (optional)
 responses:
   '200':
     description: Successfully received contacts
